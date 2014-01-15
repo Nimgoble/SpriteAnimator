@@ -1,0 +1,160 @@
+﻿<Window x:Class="SpriteAnimator.Views.MainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainView" Height="500" Width="900">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="500" />
+        </Grid.ColumnDefinitions>
+        
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+            </Grid.RowDefinitions>
+
+            <Label 
+                Grid.Row="0" 
+                Content="{Binding ImagePath}" 
+                Height="25" 
+                BorderThickness="1" 
+                BorderBrush="Black" 
+                Width="190" 
+            />
+            <Button 
+                x:Name="ChooseImage"
+                Grid.Row="1" 
+                Content="Choose Image" 
+                Width="125"
+                Height="25"
+            />
+            <Label 
+                Grid.Row="2" 
+                Content="{Binding AtlasXMLPath}" 
+                Height="25" 
+                BorderThickness="1" 
+                BorderBrush="Black" 
+                Width="190" 
+            />
+            <Button 
+                x:Name="ChooseAtlasXML"
+                Grid.Row="3" 
+                Content="Choose AtlasXML" 
+                Width="125" 
+                Height="25"
+            />
+            <Button 
+                x:Name="LoadImageAndAtlas"
+                Grid.Row="4" 
+                Content="Load" 
+                Width="125" 
+                Height="25"
+            />
+        </Grid>
+        
+        <ListView Grid.Column="1" ItemsSource="{Binding CurrentTextureAtlas.Animations}" SelectedItem="{Binding SelectedAnimation}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Border Padding="10">
+                        <TextBlock Text="{Binding Name}" />
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="40" />
+                <RowDefinition MinHeight="70" />
+            </Grid.RowDefinitions>
+            
+            <Border 
+                Padding="10"
+                BorderBrush="Black"
+                BorderThickness="1"
+                Width="128"
+                Height="128"
+                Grid.Row="0"
+            >
+                <Image x:Name="FuckThisImage" >
+                    <Image.Source>
+                        <Binding Path="CurrentAnimationFrameImage">
+                            <Binding.TargetNullValue>
+                                <Image>
+                                    <Image.Source>/Content/default.png</Image.Source>
+                                </Image>
+                            </Binding.TargetNullValue>
+                        </Binding>
+                    </Image.Source>
+                </Image>
+            </Border>
+
+            
+
+            <StackPanel 
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                Grid.Row="1"
+            >
+                <Label Content="FPS:" VerticalAlignment="Center"/>
+                <Border Padding="0 0 10 0">
+                    <TextBox Text="{Binding AnimationFPS}" Width="100" Height="25" IsEnabled="{Binding FPSEnabled}" />
+                </Border>
+                
+                <Border Padding="10 0">
+                    <CheckBox Content="Loop" IsChecked="{Binding LoopAnimation}" VerticalAlignment="Center" />
+                </Border>
+                
+                <Border Padding="10 0">
+                    <Button x:Name="PlayAnimation" Content="Play"  Width="100" Height="25" />
+                </Border>
+
+                <Border Padding="10 0">
+                    <Button x:Name="StopAnimation" Content="Stop"  Width="100" Height="25"/>
+                </Border>
+                
+            </StackPanel>
+
+            <ListView 
+                ItemsSource="{Binding SelectedAnimation.Frames}" 
+                Grid.Row="2" 
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                SelectedItem="{Binding SelectedFrame}"
+            >
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="5" BorderBrush="Black" BorderThickness="1" Width="64" Height="64">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="25" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="{Binding Name}" Grid.Row="0" />
+                                <Image Grid.Row="1">
+                                    <Image.Source>
+                                        <CroppedBitmap Source="{Binding FrameImage}" />
+                                    </Image.Source>
+                                </Image>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+
+        
+    </Grid>
+</Window>
