@@ -82,7 +82,7 @@
                 Height="128"
                 Grid.Row="0"
             >
-                <Image x:Name="FuckThisImage" >
+                <Image x:Name="currentFrame" >
                     <Image.Source>
                         <Binding Path="CurrentAnimationFrameImage">
                             <Binding.TargetNullValue>
