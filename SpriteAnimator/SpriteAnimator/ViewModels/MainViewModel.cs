@@ -13,20 +13,23 @@ using Microsoft.Win32;
 using Caliburn.Micro;
 
 using SpriteAnimator.Models;
+using SpriteAnimator.Events;
 
 namespace SpriteAnimator.ViewModels
 {
     public class MainViewModel : Screen
     {
         #region Private Members
-
         private Timer animationTimer = new Timer();
         private BitmapImage defaultImage;
         private CroppedBitmap defaultCroppedImage;
+
+        private readonly IEventAggregator eventAggregator;
         #endregion
 
-        public MainViewModel()
+        public MainViewModel(IEventAggregator eventAggregator)
         {
+            this.eventAggregator = eventAggregator;
             animationTimer.AutoReset = true;
             animationTimer.Elapsed += animationTimer_Elapsed;
             try
@@ -89,6 +92,7 @@ namespace SpriteAnimator.ViewModels
                 {
                     TextureAtlas textureAtlas = serializer.Deserialize(stream) as TextureAtlas;
                     CurrentTextureAtlas = new TextureAtlasViewModel(textureAtlas, imagePath);
+                    this.eventAggregator.Publish(new ImageLoadedEvent() { Image = CurrentTextureAtlas.Image });
                 }
             }
             catch (Exception ex)

@@ -79,17 +79,26 @@
     <Compile Include="Controls\ImageCanvas.xaml.cs">
       <DependentUpon>ImageCanvas.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Events\ImageLoadedEvent.cs" />
     <Compile Include="Models\SubTexture.cs" />
     <Compile Include="Models\TextureAtlas.cs" />
     <Compile Include="ViewModels\AnimationFrameViewModel.cs" />
     <Compile Include="ViewModels\AnimationViewModel.cs" />
+    <Compile Include="ViewModels\ImageBlobsViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\TextureAtlasViewModel.cs" />
     <Compile Include="Views\AnimationView.xaml.cs">
       <DependentUpon>AnimationView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ImageBlobsView.xaml.cs">
+      <DependentUpon>ImageBlobsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ShellView.xaml.cs">
+      <DependentUpon>ShellView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -134,7 +143,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ImageBlobsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ShellView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

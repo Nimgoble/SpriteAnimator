@@ -27,9 +27,55 @@ namespace SpriteAnimator.Controls
     /// </summary>
     public partial class AForgeBlobDisplay : UserControl
     {
+        public static readonly DependencyProperty BlobImageProperty = DependencyProperty.Register
+        (
+            "BlobImage", 
+            typeof(BitmapImage), 
+            typeof(AForgeBlobDisplay), 
+            new FrameworkPropertyMetadata
+            (
+                null,
+                BlobImageChanged,
+                BlobImageCoerced
+            ),
+            BlobImageValidation
+        );
+
+        private static void BlobImageChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
+        {
+            String debugMe = String.Empty;
+        }
+
+        private static object BlobImageCoerced(DependencyObject sender, object data)
+        {
+            return data;
+        }
+
+        private static Boolean BlobImageValidation(object data)
+        {
+            String debugMe = String.Empty;
+            return true;
+        }
+
+        private BitmapImage blobImage = null;
+        public BitmapImage BlobImage
+        {
+            get { return (BitmapImage)GetValue(BlobImageProperty); }
+            set { SetValue(BlobImageProperty, value); }
+        }
+
         private ImageCanvas imageCanvas = null;
         public AForgeBlobDisplay()
         {
+            /*
+                blobImage = value;
+                if (this.imageCanvas != null)
+                    imageCanvas.ImageSource = value;
+
+                ProcessImage();
+
+                this.InvalidateVisual();
+            */ 
             InitializeComponent();
             this.itemsControl.SelectionChanged += SelectedItemsChanged;
         }
@@ -38,7 +84,7 @@ namespace SpriteAnimator.Controls
 
         protected override Size MeasureOverride(Size constraint)
         {
-            var desiredSize = (imageSource == null) ? base.MeasureOverride(constraint) : new Size(imageSource.PixelWidth + 25, imageSource.PixelHeight + 25);
+            var desiredSize = (blobImage == null) ? base.MeasureOverride(constraint) : new Size(blobImage.PixelWidth + 25, blobImage.PixelHeight + 25);
             return desiredSize;
         }
 
@@ -68,25 +114,31 @@ namespace SpriteAnimator.Controls
 
         #region Methods
 
-        public void ProcessImage(String imageLocation)
+        public void ProcessImage()
         {
             try
             {
-                ImageSource = new BitmapImage(new Uri(imageLocation));
-                //This one is for AForge
-                System.Drawing.Bitmap bitmap = AForge.Imaging.Image.FromFile(imageLocation);
-                System.Drawing.Bitmap bitmap2 = AForge.Imaging.Image.Clone(bitmap, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-                BlobCounter blobCounter = new BlobCounter();
-                blobCounter.ProcessImage(bitmap2);
-
-                items.Clear();
-                Blob[] blobs = blobCounter.GetObjectsInformation();
-                foreach (Blob blob in blobs)
+                if (blobImage != null)
                 {
-                    items.Add(blob);
-                }
+                    //This one is for AForge
+                    System.Drawing.Bitmap bitmap = AForge.Imaging.Image.FromFile(blobImage.UriSource.AbsolutePath);
+                    System.Drawing.Bitmap bitmap2 = AForge.Imaging.Image.Clone(bitmap, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                    BlobCounter blobCounter = new BlobCounter();
+                    blobCounter.ProcessImage(bitmap2);
 
-                this.InvalidateMeasure();
+                    items.Clear();
+                    Blob[] blobs = blobCounter.GetObjectsInformation();
+                    foreach (Blob blob in blobs)
+                    {
+                        items.Add(blob);
+                    }
+
+                    this.InvalidateMeasure();
+                }
+                else
+                {
+                    items.Clear();
+                }
             }
             catch (Exception ex)
             {
@@ -123,22 +175,6 @@ namespace SpriteAnimator.Controls
                 selectedItems = value;
             }
         }
-
-        private BitmapImage imageSource = null;
-        public BitmapImage ImageSource
-        {
-            get { return imageSource; }
-            set
-            {
-                if (value == imageSource)
-                    return;
-
-                imageSource = value;
-                if (this.imageCanvas != null)
-                    imageCanvas.ImageSource = value;
-            }
-        }
-
         #endregion
     }
 }

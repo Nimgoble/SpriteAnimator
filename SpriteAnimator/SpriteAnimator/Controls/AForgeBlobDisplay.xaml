@@ -14,7 +14,7 @@
         <ListView.ItemsPanel>
             <ItemsPanelTemplate>
                 <local:ImageCanvas 
-                    ImageSource="{Binding Path=ImageSource, ElementName=blobDisplay, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                    ImageSource="{Binding Path=BlobImage, ElementName=blobDisplay, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" 
                     Loaded="ImageCanvas_Loaded"
                 />
             </ItemsPanelTemplate>
