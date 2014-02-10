@@ -18,10 +18,20 @@ namespace SpriteAnimator.ViewModels
         {
         }
 
+        public TextureAtlasViewModel(TextureAtlas textureAtlas)
+        {
+            this.ImagePath = textureAtlas.ImagePath;
+            Initialize(textureAtlas);
+        }
+
         public TextureAtlasViewModel(TextureAtlas textureAtlas, String imagePath)
         {
             this.ImagePath = imagePath;
+            Initialize(textureAtlas);
+        }
 
+        private void Initialize(TextureAtlas textureAtlas)
+        {
             image = new BitmapImage(new Uri(imagePath));
 
             List<String> animationNames = (from subTexture in textureAtlas.SubTextures select subTexture.Name.Substring(0, subTexture.Name.Length - 4)).ToList();
@@ -32,7 +42,7 @@ namespace SpriteAnimator.ViewModels
                 (
                     new AnimationViewModel
                     (
-                        animationName, 
+                        animationName,
                         (from subTexture in textureAtlas.SubTextures where (subTexture.Name.Substring(0, subTexture.Name.Length - 4) == animationName) select subTexture).ToList(),
                         image
                     )

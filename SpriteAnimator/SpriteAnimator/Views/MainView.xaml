@@ -5,59 +5,14 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" />
-            <ColumnDefinition Width="200" />
             <ColumnDefinition Width="500" />
         </Grid.ColumnDefinitions>
         
-        <Grid Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
-                <RowDefinition Height="40" />
-                <RowDefinition Height="40" />
-                <RowDefinition Height="40" />
-                <RowDefinition Height="40" />
-            </Grid.RowDefinitions>
-
-            <Label 
-                Grid.Row="0" 
-                Content="{Binding ImagePath}" 
-                Height="25" 
-                BorderThickness="1" 
-                BorderBrush="Black" 
-                Width="190" 
-            />
-            <Button 
-                x:Name="ChooseImage"
-                Grid.Row="1" 
-                Content="Choose Image" 
-                Width="125"
-                Height="25"
-            />
-            <Label 
-                Grid.Row="2" 
-                Content="{Binding AtlasXMLPath}" 
-                Height="25" 
-                BorderThickness="1" 
-                BorderBrush="Black" 
-                Width="190" 
-            />
-            <Button 
-                x:Name="ChooseAtlasXML"
-                Grid.Row="3" 
-                Content="Choose AtlasXML" 
-                Width="125" 
-                Height="25"
-            />
-            <Button 
-                x:Name="LoadImageAndAtlas"
-                Grid.Row="4" 
-                Content="Load" 
-                Width="125" 
-                Height="25"
-            />
-        </Grid>
-        
-        <ListView Grid.Column="1" ItemsSource="{Binding CurrentTextureAtlas.Animations}" SelectedItem="{Binding SelectedAnimation}">
+        <ListView 
+            Grid.Column="0" 
+            ItemsSource="{Binding CurrentTextureAtlas.Animations}" 
+            SelectedItem="{Binding SelectedAnimation}"
+        >
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border Padding="10">
@@ -67,7 +22,7 @@
             </ListView.ItemTemplate>
         </ListView>
         
-        <Grid Grid.Column="2">
+        <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="40" />

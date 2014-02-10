@@ -73,29 +73,32 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controls\AForgeBlobDisplay.xaml.cs">
-      <DependentUpon>AForgeBlobDisplay.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ImageCanvas.xaml.cs">
-      <DependentUpon>ImageCanvas.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Events\AtlasLoadedEvent.cs" />
     <Compile Include="Events\ImageLoadedEvent.cs" />
     <Compile Include="Models\SubTexture.cs" />
     <Compile Include="Models\TextureAtlas.cs" />
     <Compile Include="ViewModels\AnimationFrameViewModel.cs" />
     <Compile Include="ViewModels\AnimationViewModel.cs" />
+    <Compile Include="ViewModels\CreateAtlasPromptViewModel.cs" />
     <Compile Include="ViewModels\ImageBlobsViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\OpenSetViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\TextureAtlasViewModel.cs" />
     <Compile Include="Views\AnimationView.xaml.cs">
       <DependentUpon>AnimationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreateAtlasPromptView.xaml.cs">
+      <DependentUpon>CreateAtlasPromptView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ImageBlobsView.xaml.cs">
       <DependentUpon>ImageBlobsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\OpenSetView.xaml.cs">
+      <DependentUpon>OpenSetView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
@@ -131,15 +134,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Controls\AForgeBlobDisplay.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\ImageCanvas.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\AnimationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CreateAtlasPromptView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -148,6 +147,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OpenSetView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

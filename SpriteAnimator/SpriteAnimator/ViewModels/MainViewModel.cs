@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,7 @@ using SpriteAnimator.Events;
 
 namespace SpriteAnimator.ViewModels
 {
-    public class MainViewModel : Screen
+    public class MainViewModel : Screen, IHandle<AtlasLoadedEvent>
     {
         #region Private Members
         private Timer animationTimer = new Timer();
@@ -30,6 +31,7 @@ namespace SpriteAnimator.ViewModels
         public MainViewModel(IEventAggregator eventAggregator)
         {
             this.eventAggregator = eventAggregator;
+            eventAggregator.Subscribe(this);
             animationTimer.AutoReset = true;
             animationTimer.Elapsed += animationTimer_Elapsed;
             try
@@ -43,6 +45,7 @@ namespace SpriteAnimator.ViewModels
             }
         }
 
+        #region Animations
         void animationTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             Caliburn.Micro.Execute.BeginOnUIThread
@@ -67,6 +70,7 @@ namespace SpriteAnimator.ViewModels
             else
                 SelectedFrame = (this.SelectedFrame.Index == SelectedAnimation.FrameCount) ? selectedAnimation.Frames[0] : selectedAnimation.Frames[selectedFrame.Index]; 
         }
+        #endregion
 
         #region Commands
         public void ChooseImage()
@@ -140,6 +144,13 @@ namespace SpriteAnimator.ViewModels
         }
         #endregion
 
+        #region IHandle
+        public void Handle(AtlasLoadedEvent ev)
+        {
+            CurrentTextureAtlas = ev.Atlas;
+        }
+        #endregion
+
         #region Properties
         private String imagePath = String.Empty;
         public String ImagePath
@@ -182,8 +193,17 @@ namespace SpriteAnimator.ViewModels
 
                 currentTextureAtlas = value;
                 NotifyOfPropertyChange(() => CurrentTextureAtlas);
+                //NotifyOfPropertyChange(() => Animations);
             }
         }
+
+        //public ObservableCollection<AnimationViewModel> Animations
+        //{
+        //    get
+        //    {
+        //        return (currentTextureAtlas == null) ? new ObservableCollection<AnimationViewModel>() : currentTextureAtlas.Animations;
+        //    }
+        //}
 
         private AnimationViewModel selectedAnimation = null;
         public AnimationViewModel SelectedAnimation
@@ -241,7 +261,7 @@ namespace SpriteAnimator.ViewModels
             }
         }
 
-        private String animationFPS = String.Empty;
+        private String animationFPS = "30";
         public String AnimationFPS
         {
             get { return animationFPS; }

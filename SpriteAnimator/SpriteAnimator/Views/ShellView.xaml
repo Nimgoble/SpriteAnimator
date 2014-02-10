@@ -10,6 +10,7 @@
         
         <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1">
             <StackPanel>
+                <Button x:Name="SelectOpenSet" Content="Open Set" Width="150" Margin="0 10" />
                 <Button x:Name="SelectMain" Content="Main" Width="150" Margin="0 10" />
                 <Button x:Name="SelectImageBlobs" Content="Image Blobs" Width="150" Margin="0 10" />
             </StackPanel>
