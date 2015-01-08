@@ -18,7 +18,7 @@ using SpriteAnimator.Events;
 
 namespace SpriteAnimator.ViewModels
 {
-    public class MainViewModel : Screen, IHandle<AtlasLoadedEvent>
+    public class MainViewModel : Screen
     {
         #region Private Members
         private Timer animationTimer = new Timer();
@@ -31,7 +31,7 @@ namespace SpriteAnimator.ViewModels
         public MainViewModel(IEventAggregator eventAggregator)
         {
             this.eventAggregator = eventAggregator;
-            eventAggregator.Subscribe(this);
+            //eventAggregator.Subscribe(this);
             animationTimer.AutoReset = true;
             animationTimer.Elapsed += animationTimer_Elapsed;
             try
@@ -144,12 +144,6 @@ namespace SpriteAnimator.ViewModels
         }
         #endregion
 
-        #region IHandle
-        public void Handle(AtlasLoadedEvent ev)
-        {
-            CurrentTextureAtlas = ev.Atlas;
-        }
-        #endregion
 
         #region Properties
         private String imagePath = String.Empty;

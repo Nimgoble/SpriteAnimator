@@ -94,6 +94,7 @@ namespace SpriteAnimator.ViewModels
                 imagePath = String.Format(@"{0}/{1}", info.Directory, imagePath);
 
             TextureAtlasViewModel textureAtlasViewModel = new TextureAtlasViewModel(textureAtlas, imagePath);
+	        FilePath = String.Empty;
             this.eventAggregator.Publish(new Events.AtlasLoadedEvent() { Atlas = textureAtlasViewModel });
         }
         public bool CanLoadFile

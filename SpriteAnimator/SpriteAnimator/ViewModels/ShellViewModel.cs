@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Caliburn.Micro;
+using SpriteAnimator.Events;
 
 namespace SpriteAnimator.ViewModels
 {
-    public class ShellViewModel : Conductor<IScreen>.Collection.OneActive
+	public class ShellViewModel : Conductor<IScreen>.Collection.OneActive, IHandle<AtlasLoadedEvent>
     {
         private MainViewModel mainViewModel;
         private ImageBlobsViewModel imageBlobsViewModel;
@@ -19,6 +20,7 @@ namespace SpriteAnimator.ViewModels
         {
             this.eventAggregator = eventAggregator;
             this.windowManager = windowManager;
+			this.eventAggregator.Subscribe(this);
             DisplayName = "Sprite Animator";
             openSetViewModel = new OpenSetViewModel(eventAggregator, windowManager);
             mainViewModel = new MainViewModel(eventAggregator);
@@ -40,5 +42,13 @@ namespace SpriteAnimator.ViewModels
             this.ActivateItem(imageBlobsViewModel);
         }
         #endregion
-    }
+
+		#region IHandle
+		public void Handle(AtlasLoadedEvent ev) 
+		{
+			mainViewModel.CurrentTextureAtlas = ev.Atlas;
+			this.ActivateItem(mainViewModel);
+		}
+		#endregion
+	}
 }
