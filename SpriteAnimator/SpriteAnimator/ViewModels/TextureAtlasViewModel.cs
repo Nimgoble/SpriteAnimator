@@ -34,7 +34,7 @@ namespace SpriteAnimator.ViewModels
         {
             image = new BitmapImage(new Uri(imagePath));
 
-			foreach (var st in textureAtlas.SubTextures)
+			foreach (var st in textureAtlas.SubTextures.OrderBy(x => x.Name))
 				this.subtextures.Add(new SubTextureViewModel(st));
 
             List<String> animationNames = (from subTexture in subtextures select subTexture.Name.Substring(0, subTexture.Name.Length - 4)).ToList();
@@ -51,6 +51,17 @@ namespace SpriteAnimator.ViewModels
                     )
                 );
             }
+        }
+
+        public TextureAtlas ToTextureAtlas()
+        {
+            var rtn = new TextureAtlas()
+            {
+                ImagePath = ImagePath,
+                SubTextures = new List<SubTexture>()
+            };
+            SubTextures.ToList().ForEach(x => { rtn.SubTextures.Add(x.ToSubTexture()); });
+            return rtn;
         }
 
 		#region Properties
@@ -81,6 +92,13 @@ namespace SpriteAnimator.ViewModels
         public BitmapImage Image
         {
             get { return image; }
+            set
+            {
+                if (value == image)
+                    return;
+                image = value;
+                NotifyOfPropertyChange(() => Image);
+            }
         }
         #endregion
     }

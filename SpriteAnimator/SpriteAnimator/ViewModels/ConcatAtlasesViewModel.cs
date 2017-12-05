@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using AForge.Imaging;
+using Microsoft.Win32;
+using System.Xml.Serialization;
 
 using Caliburn.Micro;
+using SpriteAnimator.Models;
 using SpriteAnimator.Events;
 using SpriteAnimator.Utils;
 using SpriteAnimator.Wrappers;
@@ -21,7 +21,6 @@ namespace SpriteAnimator.ViewModels
 		private readonly IEventAggregator eventAggregator;
 		private readonly IWindowManager windowManager;
 		private BitmapImage defaultImage;
-		private TextureAtlasViewModel otherAtlas;
         private List<ITexturePacker> texturePackers = new List<ITexturePacker>();
 		#endregion
 
@@ -31,10 +30,6 @@ namespace SpriteAnimator.ViewModels
 			this.windowManager = windowManager;
 			defaultImage = new BitmapImage(new Uri(@"pack://application:,,,/Content/default.png"));
 			this.eventAggregator.Subscribe(this);
-			//Algorithms = new List<MaxRectsBinPack.FreeRectChoiceHeuristic>();
-			//Algorithms.AddRange(new[] { MaxRectsBinPack.FreeRectChoiceHeuristic.RectBestAreaFit, MaxRectsBinPack.FreeRectChoiceHeuristic.RectBestLongSideFit, MaxRectsBinPack.FreeRectChoiceHeuristic.RectBestShortSideFit, MaxRectsBinPack.FreeRectChoiceHeuristic.RectBottomLeftRule, MaxRectsBinPack.FreeRectChoiceHeuristic.RectContactPointRule });
-			//GrowDirections = new List<MaxRectsBinPack.GrowDirection>();
-			//GrowDirections.AddRange(new[] { MaxRectsBinPack.GrowDirection.DoNotGrow, MaxRectsBinPack.GrowDirection.Horizontal, MaxRectsBinPack.GrowDirection.Vertical });
             texturePackers.Add(new MaxRectsBinTexturePacker());
             texturePackers.Add(new ChevyRayTexturePacker());
             SelectedTexturePacker = texturePackers.First();
@@ -48,8 +43,7 @@ namespace SpriteAnimator.ViewModels
 			if (string.IsNullOrEmpty(file))
 				return;
 
-			otherAtlas = loadVM.LoadFile(file);
-			OtherImage = otherAtlas.Image;
+			OtherAtlas = loadVM.LoadFile(file);
 			ProcessAtlases();
 		}
 		
@@ -57,8 +51,29 @@ namespace SpriteAnimator.ViewModels
 
 		public void SaveResult()
 		{
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.DefaultExt = ".xml";
+            saveFileDialog.Filter = "(*.png, *.xml)|*.png;*.xml";
 
-		}
+            if(saveFileDialog.ShowDialog() == true)
+            {
+                var filePath = Path.GetDirectoryName(saveFileDialog.FileName);
+                var nakedFileName = Path.GetFileNameWithoutExtension(saveFileDialog.FileName);
+                var atlasFilePath = Path.Combine(filePath, nakedFileName + ".xml");
+                var imageFileName = Path.Combine(nakedFileName + ".png");
+                var imageFilePath = Path.Combine(filePath, imageFileName);
+                resultAtlas.ImagePath = imageFileName;
+
+                XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+                ns.Add(string.Empty, string.Empty);
+                using (FileStream stream = new FileStream(atlasFilePath, FileMode.OpenOrCreate))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(TextureAtlas));
+                    serializer.Serialize(stream, resultAtlas.ToTextureAtlas(), ns);
+                }
+                ImageUtil.SaveImage(resultAtlas.Image, imageFilePath);
+            }
+        }
 
 		private void ProcessAtlases()
 		{
@@ -129,7 +144,24 @@ namespace SpriteAnimator.ViewModels
             }
             
             var newResult = ImageUtil.StitchImages(currentImage.DpiX, currentImage.DpiY, currentImage.Format, arguments);
-			ResultImage = newResult;
+            var newResultAtlas = new TextureAtlasViewModel();
+            arguments.OrderBy(x => x.Name).ToList().ForEach
+            (
+                x =>
+                {
+                    var subTexture = new SubTexture()
+                    {
+                        Height = x.DestinationRect.Height,
+                        Width = x.DestinationRect.Width,
+                        X = x.DestinationRect.X,
+                        Y = x.DestinationRect.Y,
+                        Name = x.Name
+                    };
+                    newResultAtlas.SubTextures.Add(new SubTextureViewModel(subTexture));
+                }
+            );
+            newResultAtlas.Image = newResult;
+            ResultAtlas = newResultAtlas;
 		}
 		#endregion
 
@@ -172,6 +204,20 @@ namespace SpriteAnimator.ViewModels
 			}
 		}
 
+        private TextureAtlasViewModel otherAtlas = null;
+        public TextureAtlasViewModel OtherAtlas
+        {
+            get { return otherAtlas; }
+            set
+            {
+                if (value == otherAtlas)
+                    return;
+                otherAtlas = value;
+                OtherImage = (otherAtlas != null) ? otherAtlas.Image : defaultImage;
+                NotifyOfPropertyChange(() => OtherAtlas);
+            }
+        }
+
 		private BitmapImage otherImage = null;
 		public BitmapImage OtherImage
 		{
@@ -186,7 +232,21 @@ namespace SpriteAnimator.ViewModels
 			}
 		}
 
-		private BitmapImage resultImage = null;
+        private TextureAtlasViewModel resultAtlas = null;
+        public TextureAtlasViewModel ResultAtlas
+        {
+            get { return resultAtlas; }
+            set
+            {
+                if (value == resultAtlas)
+                    return;
+                resultAtlas = value;
+                ResultImage = (resultAtlas != null) ? (resultAtlas.Image ?? defaultImage) : defaultImage;
+                NotifyOfPropertyChange(() => ResultAtlas);
+            }
+        }
+
+        private BitmapImage resultImage = null;
 		public BitmapImage ResultImage
 		{
 			get { return resultImage; }
@@ -299,34 +359,6 @@ namespace SpriteAnimator.ViewModels
 
         private ObservableCollection<Rect> resultRectangles = new ObservableCollection<Rect>();
         public ObservableCollection<Rect> ResultRectangles { get { return resultRectangles; } }
-
-        //private ObservableCollection<Blob> blobs = new ObservableCollection<Blob>();
-        //public ObservableCollection<Blob> Blobs
-        //{
-        //	get { return blobs; }
-        //	set
-        //	{
-        //		if (value == blobs)
-        //			return;
-
-        //		blobs = value;
-        //		NotifyOfPropertyChange(() => Blobs);
-        //	}
-        //}
-
-        //private ObservableCollection<Blob> selectedBlobs = new ObservableCollection<Blob>();
-        //public ObservableCollection<Blob> SelectedBlobs
-        //{
-        //	get { return selectedBlobs; }
-        //	set
-        //	{
-        //		if (value == selectedBlobs)
-        //			return;
-
-        //		selectedBlobs = value;
-        //		NotifyOfPropertyChange(() => SelectedBlobs);
-        //	}
-        //}
 
         #endregion
     }

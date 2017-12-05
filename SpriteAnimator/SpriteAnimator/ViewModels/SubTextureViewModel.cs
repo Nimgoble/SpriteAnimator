@@ -20,6 +20,18 @@ namespace SpriteAnimator.ViewModels
 			this.bounds = new Rect(subTexture.X, subTexture.Y, subTexture.Width, subTexture.Height);
         }
 
+        public SubTexture ToSubTexture()
+        {
+            return new SubTexture()
+            {
+                Name = Name,
+                Height = Height,
+                Width = Width,
+                X = X,
+                Y = Y
+            };
+        }
+
         #region Properties
         private String name = String.Empty;
         public String Name 
