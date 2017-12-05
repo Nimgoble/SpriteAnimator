@@ -58,7 +58,8 @@ namespace SpriteAnimator.ViewModels
 		private void ProcessAtlases()
 		{
 			var dst = preserveSourceOrder ? (from st in currentAtlas.SubTextures select st.Bounds).ToList() : null;
-			MaxRectsBinPack packer = new MaxRectsBinPack((int)currentImage.PixelWidth, (int)currentImage.PixelHeight, false, dst);
+            //MaxRectsBinPack packer = new MaxRectsBinPack((int)currentImage.PixelWidth, (int)currentImage.PixelHeight, false, dst);
+            var packer = new RectanglePacker();
 			var listOfSubTexturesToChange = new List<Tuple<SubTextureViewModel, BitmapSource>>();
 			if (!PreserveSourceOrder)
 			{
@@ -71,12 +72,23 @@ namespace SpriteAnimator.ViewModels
 			var src = (from st in otherAtlas.SubTextures select st.Bounds).ToList();
 			Dictionary<SubTextureViewModel, Rect> moveLocations = new Dictionary<SubTextureViewModel, Rect>();
 			var arguments = new List<StitchImageArguments>();
+
+            if(PreserveSourceOrder)
+            {
+                int x, y;
+                packer.Pack(currentImage.PixelWidth, currentImage.PixelHeight, out x, out y);
+            }
+
 			foreach (var item in listOfSubTexturesToChange)
 			{
 				var st = item.Item1;
-				var result = packer.Insert(st.Bounds.Width, st.Bounds.Height, SelectedAlgorithm, selectedGrowDirection);
-				if (result == null)
-					continue;
+                //var result = packer.Insert(st.Bounds.Width, st.Bounds.Height, SelectedAlgorithm, selectedGrowDirection);
+                //if (result == null)
+                //	continue;
+                int x, y;
+                packer.Pack(st.Bounds.Width, st.Bounds.Height, out x, out y);
+                var result = new Rect(x, y, st.Bounds.Width, st.Bounds.Height);
+
 				var argument = new StitchImageArguments()
 				{
 					Name = st.Name,
@@ -92,7 +104,9 @@ namespace SpriteAnimator.ViewModels
 				arguments.Add(new StitchImageArguments() { Source = currentImage, DestinationRect = currentImageRect, SourceRect = currentImageRect });
 			}
 			var wiggleRoom = 1000;
-			var newResult = ImageUtil.StitchImages(packer.binWidth + wiggleRoom, packer.binHeight + wiggleRoom, currentImage.DpiX, currentImage.DpiY, currentImage.Format, arguments);
+            //var totalWidth = packer.binWidth + wiggleRoom;
+            //var totalHeight = packer.binHeight + wiggleRoom;
+            var newResult = ImageUtil.StitchImages(currentImage.DpiX, currentImage.DpiY, currentImage.Format, arguments);
 			ResultImage = newResult;
 		}
 		#endregion

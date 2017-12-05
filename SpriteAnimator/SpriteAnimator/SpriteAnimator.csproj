@@ -83,6 +83,7 @@
     <Compile Include="Utils\ImageUtil.cs" />
     <Compile Include="Utils\MaxRectsBinPack.cs" />
     <Compile Include="Utils\Rect.cs" />
+    <Compile Include="Utils\RectanglePacker.cs" />
     <Compile Include="ViewModels\AnimationFrameViewModel.cs" />
     <Compile Include="ViewModels\AnimationViewModel.cs" />
     <Compile Include="ViewModels\ConcatAtlasesViewModel.cs" />

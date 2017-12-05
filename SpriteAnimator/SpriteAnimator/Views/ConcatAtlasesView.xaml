@@ -25,7 +25,7 @@
 		</Grid.RowDefinitions>
 
 		<Label Grid.Row="0" Grid.Column="0">Source</Label>
-		<ScrollViewer Grid.Column="0" Grid.Row="1" Background="White">
+        <ScrollViewer Grid.Column="0" Grid.Row="1" Background="White" HorizontalScrollBarVisibility="Visible">
 			<Canvas
                 VerticalAlignment="Top" 
                 HorizontalAlignment="Left"
@@ -51,7 +51,7 @@
 		</ScrollViewer>
 
 		<Label Grid.Row="0" Grid.Column="1">Other Atlas</Label>
-		<ScrollViewer Grid.Column="1" Grid.Row="1" Background="White">
+        <ScrollViewer Grid.Column="1" Grid.Row="1" Background="White" HorizontalScrollBarVisibility="Visible">
 			<Canvas
                 VerticalAlignment="Top" 
                 HorizontalAlignment="Left"
@@ -77,7 +77,7 @@
 		</ScrollViewer>
 
 		<Label Grid.Row="0" Grid.Column="2">Result</Label>
-		<ScrollViewer Grid.Column="2" Grid.Row="1" Background="White">
+        <ScrollViewer Grid.Column="2" Grid.Row="1" Background="White" HorizontalScrollBarVisibility="Visible">
 			<Canvas
                 VerticalAlignment="Top" 
                 HorizontalAlignment="Left"

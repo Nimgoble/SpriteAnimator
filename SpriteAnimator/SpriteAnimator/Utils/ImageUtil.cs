@@ -19,11 +19,16 @@ namespace SpriteAnimator.Utils
 	}
     public static class ImageUtil
     {
-		public static BitmapImage StitchImages(int width, int height, double dpiX, double dpiY, PixelFormat format, List<StitchImageArguments> arguments)
+        public static BitmapImage StitchImages(double dpiX, double dpiY, PixelFormat format, List<StitchImageArguments> arguments)
+        {
+            var maxHeight = (from arg in arguments select arg.DestinationRect.Height + arg.DestinationRect.Y).OrderByDescending(x => x).First();
+            var maxWidth = (from arg in arguments select arg.DestinationRect.Width + arg.DestinationRect.X).OrderByDescending(x => x).First();
+            return StitchImages(maxWidth, maxHeight, dpiX, dpiY, format, arguments);
+        }
+
+        public static BitmapImage StitchImages(int width, int height, double dpiX, double dpiY, PixelFormat format, List<StitchImageArguments> arguments)
 		{
-			var maxHeight = (from arg in arguments select arg.DestinationRect.Height + arg.DestinationRect.Y).OrderByDescending(x => x).First();
-			var maxWidth = (from arg in arguments select arg.DestinationRect.Width + arg.DestinationRect.X).OrderByDescending(x => x).First();
-			var blankCanvas = new WriteableBitmap(maxWidth, maxHeight, dpiX, dpiY, format, null);
+			var blankCanvas = new WriteableBitmap(width, height, dpiX, dpiY, format, null);
 			foreach(var argument in arguments)
 			{
 				var image = argument.Source;
