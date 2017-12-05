@@ -104,9 +104,25 @@
 
 		<Border Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1">
 			<StackPanel Orientation="Horizontal">
-				<Button x:Name="LoadAtlasToConcat" Content="Load Atlas To Concat" Width="150" Margin="10" />
-				<ComboBox ItemsSource="{Binding Algorithms}" SelectedItem="{Binding SelectedAlgorithm}" Width="150" Height="30" Margin="10 5" VerticalContentAlignment="Center" />
+                <Button x:Name="LoadAtlasToConcat" Content="Load Atlas To Concat" Width="150" Margin="10" />
+                <!--
 				<ComboBox ItemsSource="{Binding GrowDirections}" SelectedItem="{Binding SelectedGrowDirection}" Width="150" Height="30" Margin="10 5" VerticalContentAlignment="Center" />
+                -->
+                <ComboBox ItemsSource="{Binding TexturePackers}" SelectedItem="{Binding SelectedTexturePacker}" DisplayMemberPath="Name" Width="150" Height="30" Margin="10 5" VerticalContentAlignment="Center" />
+                <ComboBox ItemsSource="{Binding Algorithms}" SelectedItem="{Binding SelectedAlgorithm}" Width="150" Height="30" Margin="10 5" VerticalContentAlignment="Center">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasPackingAlgorithms}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding HasPackingAlgorithms}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
 				<CheckBox Content="Preserve Source Order" IsChecked="{Binding PreserveSourceOrder}" VerticalAlignment="Center" />
 				<Button x:Name="SaveResult" Content="Save Result" Width="150" Margin="10" />
 			</StackPanel>

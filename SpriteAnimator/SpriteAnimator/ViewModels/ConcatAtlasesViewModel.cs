@@ -11,6 +11,7 @@ using AForge.Imaging;
 using Caliburn.Micro;
 using SpriteAnimator.Events;
 using SpriteAnimator.Utils;
+using SpriteAnimator.Wrappers;
 
 namespace SpriteAnimator.ViewModels
 {
@@ -21,6 +22,7 @@ namespace SpriteAnimator.ViewModels
 		private readonly IWindowManager windowManager;
 		private BitmapImage defaultImage;
 		private TextureAtlasViewModel otherAtlas;
+        private List<ITexturePacker> texturePackers = new List<ITexturePacker>();
 		#endregion
 
 		public ConcatAtlasesViewModel(IEventAggregator eventAggregator, IWindowManager windowManager)
@@ -29,11 +31,14 @@ namespace SpriteAnimator.ViewModels
 			this.windowManager = windowManager;
 			defaultImage = new BitmapImage(new Uri(@"pack://application:,,,/Content/default.png"));
 			this.eventAggregator.Subscribe(this);
-			Algorithms = new List<MaxRectsBinPack.FreeRectChoiceHeuristic>();
-			Algorithms.AddRange(new[] { MaxRectsBinPack.FreeRectChoiceHeuristic.RectBestAreaFit, MaxRectsBinPack.FreeRectChoiceHeuristic.RectBestLongSideFit, MaxRectsBinPack.FreeRectChoiceHeuristic.RectBestShortSideFit, MaxRectsBinPack.FreeRectChoiceHeuristic.RectBottomLeftRule, MaxRectsBinPack.FreeRectChoiceHeuristic.RectContactPointRule });
-			GrowDirections = new List<MaxRectsBinPack.GrowDirection>();
-			GrowDirections.AddRange(new[] { MaxRectsBinPack.GrowDirection.DoNotGrow, MaxRectsBinPack.GrowDirection.Horizontal, MaxRectsBinPack.GrowDirection.Vertical });
-		}
+			//Algorithms = new List<MaxRectsBinPack.FreeRectChoiceHeuristic>();
+			//Algorithms.AddRange(new[] { MaxRectsBinPack.FreeRectChoiceHeuristic.RectBestAreaFit, MaxRectsBinPack.FreeRectChoiceHeuristic.RectBestLongSideFit, MaxRectsBinPack.FreeRectChoiceHeuristic.RectBestShortSideFit, MaxRectsBinPack.FreeRectChoiceHeuristic.RectBottomLeftRule, MaxRectsBinPack.FreeRectChoiceHeuristic.RectContactPointRule });
+			//GrowDirections = new List<MaxRectsBinPack.GrowDirection>();
+			//GrowDirections.AddRange(new[] { MaxRectsBinPack.GrowDirection.DoNotGrow, MaxRectsBinPack.GrowDirection.Horizontal, MaxRectsBinPack.GrowDirection.Vertical });
+            texturePackers.Add(new MaxRectsBinTexturePacker());
+            texturePackers.Add(new ChevyRayTexturePacker());
+            SelectedTexturePacker = texturePackers.First();
+        }
 
 		#region Methods
 		public void LoadAtlasToConcat()
@@ -57,9 +62,10 @@ namespace SpriteAnimator.ViewModels
 
 		private void ProcessAtlases()
 		{
-			var dst = preserveSourceOrder ? (from st in currentAtlas.SubTextures select st.Bounds).ToList() : null;
-            //MaxRectsBinPack packer = new MaxRectsBinPack((int)currentImage.PixelWidth, (int)currentImage.PixelHeight, false, dst);
-            var packer = new RectanglePacker();
+            if (selectedTexturePacker == null || currentAtlas == null || otherAtlas == null)
+                return;
+            selectedTexturePacker.Reset();
+            var dst = preserveSourceOrder ? (from st in currentAtlas.SubTextures select st.Bounds).ToList() : null;
 			var listOfSubTexturesToChange = new List<Tuple<SubTextureViewModel, BitmapSource>>();
 			if (!PreserveSourceOrder)
 			{
@@ -75,21 +81,16 @@ namespace SpriteAnimator.ViewModels
 
             if(PreserveSourceOrder)
             {
-                int x, y;
-                packer.Pack(currentImage.PixelWidth, currentImage.PixelHeight, out x, out y);
+                selectedTexturePacker.Pack(new Rect(0, 0, currentImage.PixelWidth, currentImage.PixelHeight));
             }
 
-			foreach (var item in listOfSubTexturesToChange)
+            foreach (var item in listOfSubTexturesToChange.OrderByDescending(x => x.Item1.Bounds.Area))
 			{
 				var st = item.Item1;
-                //var result = packer.Insert(st.Bounds.Width, st.Bounds.Height, SelectedAlgorithm, selectedGrowDirection);
-                //if (result == null)
-                //	continue;
-                int x, y;
-                packer.Pack(st.Bounds.Width, st.Bounds.Height, out x, out y);
-                var result = new Rect(x, y, st.Bounds.Width, st.Bounds.Height);
-
-				var argument = new StitchImageArguments()
+                var result = selectedTexturePacker.Pack(st.Bounds);
+                if (result == null)
+                    continue;
+                var argument = new StitchImageArguments()
 				{
 					Name = st.Name,
 					Source = new CroppedBitmap(item.Item2, st.Bounds.ToInt32Rect()),
@@ -103,7 +104,7 @@ namespace SpriteAnimator.ViewModels
 				var currentImageRect = new System.Windows.Int32Rect(0, 0, currentImage.PixelWidth, currentImage.PixelHeight);
 				arguments.Add(new StitchImageArguments() { Source = currentImage, DestinationRect = currentImageRect, SourceRect = currentImageRect });
 			}
-			var wiggleRoom = 1000;
+			//var wiggleRoom = 1000;
             //var totalWidth = packer.binWidth + wiggleRoom;
             //var totalHeight = packer.binHeight + wiggleRoom;
             var newResult = ImageUtil.StitchImages(currentImage.DpiX, currentImage.DpiY, currentImage.Format, arguments);
@@ -177,9 +178,16 @@ namespace SpriteAnimator.ViewModels
 			}
 		}
 
-		public List<MaxRectsBinPack.FreeRectChoiceHeuristic> Algorithms { get; set; }
-		private MaxRectsBinPack.FreeRectChoiceHeuristic selectedAlgorithm = MaxRectsBinPack.FreeRectChoiceHeuristic.RectBestAreaFit;
-		public MaxRectsBinPack.FreeRectChoiceHeuristic SelectedAlgorithm
+        private List<PackingMethod> defaultAlgorithms = new List<PackingMethod>();
+        public List<PackingMethod> Algorithms
+        {
+            get
+            {
+                return selectedTexturePacker == null ? defaultAlgorithms : selectedTexturePacker.AvailablePackingMethods.ToList();
+            }
+        }
+		private PackingMethod selectedAlgorithm = PackingMethod.BestAreaFit;
+		public PackingMethod SelectedAlgorithm
 		{
 			get { return selectedAlgorithm; }
 			set
@@ -191,6 +199,7 @@ namespace SpriteAnimator.ViewModels
 				ProcessAtlases();
 			}
 		}
+        public bool HasPackingAlgorithms { get { return selectedTexturePacker != null && selectedTexturePacker.AvailablePackingMethods.Any(); } }
 
 		private bool preserveSourceOrder = true;
 		public bool PreserveSourceOrder
@@ -206,50 +215,69 @@ namespace SpriteAnimator.ViewModels
 			}
 		}
 
-		public List<MaxRectsBinPack.GrowDirection> GrowDirections { get; set; }
-		private MaxRectsBinPack.GrowDirection selectedGrowDirection = MaxRectsBinPack.GrowDirection.DoNotGrow;
-		public MaxRectsBinPack.GrowDirection SelectedGrowDirection
-		{
-			get { return selectedGrowDirection; }
-			set
-			{
-				if (value == selectedGrowDirection)
-					return;
-				selectedGrowDirection = value;
-				NotifyOfPropertyChange(() => SelectedGrowDirection);
-				ProcessAtlases();
-			}
-		}
-
-		//private ObservableCollection<Blob> blobs = new ObservableCollection<Blob>();
-		//public ObservableCollection<Blob> Blobs
+		//public List<MaxRectsBinPack.GrowDirection> GrowDirections { get; set; }
+		//private MaxRectsBinPack.GrowDirection selectedGrowDirection = MaxRectsBinPack.GrowDirection.DoNotGrow;
+		//public MaxRectsBinPack.GrowDirection SelectedGrowDirection
 		//{
-		//	get { return blobs; }
+		//	get { return selectedGrowDirection; }
 		//	set
 		//	{
-		//		if (value == blobs)
+		//		if (value == selectedGrowDirection)
 		//			return;
-
-		//		blobs = value;
-		//		NotifyOfPropertyChange(() => Blobs);
+		//		selectedGrowDirection = value;
+		//		NotifyOfPropertyChange(() => SelectedGrowDirection);
+		//		ProcessAtlases();
 		//	}
 		//}
 
-		//private ObservableCollection<Blob> selectedBlobs = new ObservableCollection<Blob>();
-		//public ObservableCollection<Blob> SelectedBlobs
-		//{
-		//	get { return selectedBlobs; }
-		//	set
-		//	{
-		//		if (value == selectedBlobs)
-		//			return;
+        public List<ITexturePacker> TexturePackers { get { return texturePackers; } }
+        private ITexturePacker selectedTexturePacker;
+        public ITexturePacker SelectedTexturePacker
+        {
+            get { return selectedTexturePacker; }
+            set
+            {
+                if (value == selectedTexturePacker)
+                    return;
+                selectedTexturePacker = value;
+                NotifyOfPropertyChange(() => SelectedTexturePacker);
+                NotifyOfPropertyChange(() => Algorithms);
+                NotifyOfPropertyChange(() => HasPackingAlgorithms);
+                SelectedAlgorithm = PackingMethod.BestAreaFit;
+                ProcessAtlases();
+            }
+        }
 
-		//		selectedBlobs = value;
-		//		NotifyOfPropertyChange(() => SelectedBlobs);
-		//	}
-		//}
 
-		#endregion
-	}
+        //private ObservableCollection<Blob> blobs = new ObservableCollection<Blob>();
+        //public ObservableCollection<Blob> Blobs
+        //{
+        //	get { return blobs; }
+        //	set
+        //	{
+        //		if (value == blobs)
+        //			return;
+
+        //		blobs = value;
+        //		NotifyOfPropertyChange(() => Blobs);
+        //	}
+        //}
+
+        //private ObservableCollection<Blob> selectedBlobs = new ObservableCollection<Blob>();
+        //public ObservableCollection<Blob> SelectedBlobs
+        //{
+        //	get { return selectedBlobs; }
+        //	set
+        //	{
+        //		if (value == selectedBlobs)
+        //			return;
+
+        //		selectedBlobs = value;
+        //		NotifyOfPropertyChange(() => SelectedBlobs);
+        //	}
+        //}
+
+        #endregion
+    }
 }
 

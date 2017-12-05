@@ -20,6 +20,7 @@ namespace SpriteAnimator.Utils
 		public int Y { get; set; }
 		public int Width { get; set; }
 		public int Height { get; set; }
+        public int Area { get { return Width * Height; } }
 		public System.Windows.Int32Rect ToInt32Rect()
 		{
 			return new System.Windows.Int32Rect(X, Y, Width, Height);

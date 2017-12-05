@@ -32,12 +32,12 @@ namespace SpriteAnimator.Utils
 			Vertical
 		};
 
-		public MaxRectsBinPack(int width, int height, bool rotations = true, List<Rect> existingRects = null)
+		public MaxRectsBinPack(int width, int height, bool rotations = true/*, List<Rect> existingRects = null*/)
 		{
-			Init(width, height, rotations, existingRects);
+			Init(width, height, rotations/*, existingRects*/);
 		}
 
-		public void Init(int width, int height, bool rotations = true, List<Rect> existingRects = null)
+		public void Init(int width, int height, bool rotations = true/*, List<Rect> existingRects = null*/)
 		{
 			binWidth = width;
 			binHeight = height;
@@ -51,11 +51,11 @@ namespace SpriteAnimator.Utils
 			usedRectangles.Clear();
 			freeRectangles.Clear();
 			freeRectangles.Add(n);
-			if (existingRects != null && existingRects.Any())
-			{
-				foreach(var node in existingRects)
-					PlaceRect(node);
-			}
+			//if (existingRects != null && existingRects.Any())
+			//{
+			//	foreach(var node in existingRects)
+			//		PlaceRect(node);
+			//}
 		}
 
 		public Rect Insert(int width, int height, FreeRectChoiceHeuristic method, GrowDirection growDirection)
@@ -74,27 +74,28 @@ namespace SpriteAnimator.Utils
 
 			if (newNode.Height == 0)
 			{
-				switch(growDirection)
-				{
-					case GrowDirection.DoNotGrow:
-						return null;
-					case GrowDirection.Horizontal:
-						{
-							Rect newFreeNode = new Rect(binWidth, 0, width, binHeight);
-							freeRectangles.Add(newFreeNode);
-							binWidth += width;
-							newNode = Insert(width, height, method, GrowDirection.DoNotGrow);
-							return newNode;
-						}
-					case GrowDirection.Vertical:
-						{
-							Rect newFreeNode = new Rect(0, binHeight, binWidth, height);
-							freeRectangles.Add(newFreeNode);
-							binHeight += height;
-							newNode = Insert(width, height, method, GrowDirection.DoNotGrow);
-							return newNode;
-						}
-				}
+                return null;
+				//switch(growDirection)
+				//{
+				//	case GrowDirection.DoNotGrow:
+				//		return null;
+				//	case GrowDirection.Horizontal:
+				//		{
+				//			Rect newFreeNode = new Rect(binWidth, 0, width, binHeight);
+				//			freeRectangles.Add(newFreeNode);
+				//			binWidth += width;
+				//			newNode = Insert(width, height, method, GrowDirection.DoNotGrow);
+				//			return newNode;
+				//		}
+				//	case GrowDirection.Vertical:
+				//		{
+				//			Rect newFreeNode = new Rect(0, binHeight, binWidth, height);
+				//			freeRectangles.Add(newFreeNode);
+				//			binHeight += height;
+				//			newNode = Insert(width, height, method, GrowDirection.DoNotGrow);
+				//			return newNode;
+				//		}
+				//}
 			}
 
 			int numRectanglesToProcess = freeRectangles.Count;
