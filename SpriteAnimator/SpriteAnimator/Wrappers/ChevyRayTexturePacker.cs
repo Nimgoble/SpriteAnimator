@@ -21,6 +21,10 @@ namespace SpriteAnimator.Wrappers
             int x, y;
             return packer.Pack(source.Width, source.Height, out x, out y) ? new Rect(x, y, source.Width, source.Height) : null;
         }
+        public IEnumerable<Rect> PackAll(IEnumerable<Rect> source)
+        {
+            return source.Select(x => Pack(x)).ToList();
+        }
         public void SetPackingMethod(PackingMethod packingMethod) { }
         private static List<PackingMethod> packingMethods = new List<PackingMethod>();
         public IEnumerable<PackingMethod> AvailablePackingMethods { get { return packingMethods; } }

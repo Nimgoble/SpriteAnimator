@@ -21,6 +21,10 @@ namespace SpriteAnimator.Wrappers
         {
             return packer.Insert(source.Width, source.Height, PackingMethodToFreeRectChoiceHeuristic(packingMethod));
         }
+        public IEnumerable<Rect> PackAll(IEnumerable<Rect> source)
+        {
+            return packer.Insert(source.ToList(), PackingMethodToFreeRectChoiceHeuristic(packingMethod));
+        }
         public void SetPackingMethod(PackingMethod packingMethod)
         {
             this.packingMethod = packingMethod;

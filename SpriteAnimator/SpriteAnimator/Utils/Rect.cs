@@ -16,7 +16,14 @@ namespace SpriteAnimator.Utils
 			Width = width;
 			Height = height;
 		}
-		public int X { get; set; }
+        public Rect(Rect other)
+        {
+            X = other.X;
+            Y = other.Y;
+            Width = other.Width;
+            Height = other.Height;
+        }
+        public int X { get; set; }
 		public int Y { get; set; }
 		public int Width { get; set; }
 		public int Height { get; set; }

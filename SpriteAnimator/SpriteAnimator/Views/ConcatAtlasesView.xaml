@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:SpriteAnimator.Views"
 			 xmlns:cal="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="600">
+             d:DesignHeight="600" d:DesignWidth="600">
     <Grid>
 		<Grid.Resources>
 			<ResourceDictionary>
@@ -21,7 +21,7 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="30" />
 			<RowDefinition Height="*" />
-			<RowDefinition Height="50" />
+			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 
 		<Label Grid.Row="0" Grid.Column="0">Source</Label>
@@ -147,7 +147,7 @@
 		</ScrollViewer>
 
 		<Border Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1">
-			<StackPanel Orientation="Horizontal">
+			<WrapPanel Orientation="Horizontal">
                 <Button x:Name="LoadAtlasToConcat" Content="Load Atlas To Concat" Width="150" Margin="10" />
                 <!--
 				<ComboBox ItemsSource="{Binding GrowDirections}" SelectedItem="{Binding SelectedGrowDirection}" Width="150" Height="30" Margin="10 5" VerticalContentAlignment="Center" />
@@ -167,9 +167,11 @@
                         </Style>
                     </ComboBox.Style>
                 </ComboBox>
-				<CheckBox Content="Preserve Source Order" IsChecked="{Binding PreserveSourceOrder}" VerticalAlignment="Center" />
+				<CheckBox Content="Preserve Source Order" IsChecked="{Binding PreserveSourceOrder}" VerticalAlignment="Center" Margin="10 0" />
+                <CheckBox Content="Concat All At Once" IsChecked="{Binding ConcatAllAtOnce}" VerticalAlignment="Center" Margin="10 0" />
+                <CheckBox Content="Order By Area Descending" IsChecked="{Binding OrderByAreaDescending}" VerticalAlignment="Center" Margin="10 0" />
 				<Button x:Name="SaveResult" Content="Save Result" Width="150" Margin="10" />
-			</StackPanel>
+			</WrapPanel>
 		</Border>
 	</Grid>
 </UserControl>

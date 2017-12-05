@@ -21,8 +21,8 @@ namespace SpriteAnimator.Utils
     {
         public static BitmapImage StitchImages(double dpiX, double dpiY, PixelFormat format, List<StitchImageArguments> arguments)
         {
-            var maxHeight = (from arg in arguments select arg.DestinationRect.Height + arg.DestinationRect.Y).OrderByDescending(x => x).First();
-            var maxWidth = (from arg in arguments select arg.DestinationRect.Width + arg.DestinationRect.X).OrderByDescending(x => x).First();
+            var maxHeight = (from arg in arguments select arg.SourceRect.Height + arg.DestinationRect.Y).OrderByDescending(x => x).First();
+            var maxWidth = (from arg in arguments select arg.SourceRect.Width + arg.DestinationRect.X).OrderByDescending(x => x).First();
             return StitchImages(maxWidth, maxHeight, dpiX, dpiY, format, arguments);
         }
 

@@ -21,6 +21,7 @@ namespace SpriteAnimator.Wrappers
     {
         string Name { get; }
         Rect Pack(Rect source);
+        IEnumerable<Rect> PackAll(IEnumerable<Rect> source);
         void SetPackingMethod(PackingMethod packingMethod);
         IEnumerable<PackingMethod> AvailablePackingMethods { get; }
         void Reset();

@@ -20,6 +20,10 @@ namespace SpriteAnimator.Wrappers
         {
             return null;
         }
+        public IEnumerable<Rect> PackAll(IEnumerable<Rect> source)
+        {
+            return null;
+        }
         public void SetPackingMethod(PackingMethod packingMethod) { }
         private static List<PackingMethod> packingMethods = new List<PackingMethod>();
         public IEnumerable<PackingMethod> AvailablePackingMethods { get { return packingMethods; } }

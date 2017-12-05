@@ -115,50 +115,60 @@ namespace SpriteAnimator.Utils
 			return newNode;
 		}
 
-		public void Insert(List<Rect> rects, FreeRectChoiceHeuristic method)
+		public List<Rect> Insert(List<Rect> rects, FreeRectChoiceHeuristic method)
 		{
-            int score1 = 0;
-            int score2 = 0;
+            //int score1 = 0;
+            //int score2 = 0;
+            var rtn = new Rect[rects.Count];
 
-            var orderedByScore = rects.OrderBy(x => ScoreRect(x.Width, x.Height, method, ref score1, ref score2)).ToList();
+            var rectsCopy = new List<Rect>();
+            rectsCopy.AddRange(rects);
 
-            for(int i = 0; i < orderedByScore.Count; ++i)
+            //var orderedByScore = rects.OrderBy(x => ScoreRect(x.Width, x.Height, method, ref score1, ref score2)).ToList();
+
+            //for(int i = 0; i < orderedByScore.Count; ++i)
+            //{
+            //    var bestNode = orderedByScore.First();
+            //    var originalIndex = rects.IndexOf(bestNode);
+            //    PlaceRect(bestNode);
+            //    rtn[originalIndex] = bestNode;
+            //    orderedByScore = orderedByScore.GetRange(1, orderedByScore.Count - 1).OrderBy(x => ScoreRect(x.Width, x.Height, method, ref score1, ref score2)).ToList();
+            //}
+
+            while (rectsCopy.Count > 0)
             {
-                var bestNode = orderedByScore.First();
+                int bestScore1 = int.MaxValue;
+                int bestScore2 = int.MaxValue;
+                int bestRectIndex = -1;
+                int bestRectOriginalIndex = -1;
+                Rect bestNode = null;
+
+                for (int i = 0; i < rectsCopy.Count; ++i)
+                {
+                    int score1 = 0;
+                    int score2 = 0;
+                    var currentRect = rectsCopy[i];
+                    Rect newNode = ScoreRect(currentRect.Width, currentRect.Height, method, ref score1, ref score2);
+
+                    if (score1 < bestScore1 || (score1 == bestScore1 && score2 < bestScore2))
+                    {
+                        bestScore1 = score1;
+                        bestScore2 = score2;
+                        bestNode = newNode;
+                        bestRectIndex = i;
+                        bestRectOriginalIndex = rects.IndexOf(currentRect);
+                    }
+                }
+
+                if (bestRectIndex == -1)
+                    break;
+
                 PlaceRect(bestNode);
-                orderedByScore = orderedByScore.GetRange(1, orderedByScore.Count - 1).OrderBy(x => ScoreRect(x.Width, x.Height, method, ref score1, ref score2)).ToList();
+                rtn[bestRectOriginalIndex] = bestNode;
+                rectsCopy.RemoveAt(bestRectIndex);
             }
-
-			//while (rects.Count > 0)
-			//{
-			//	int bestScore1 = int.MaxValue;
-			//	int bestScore2 = int.MaxValue;
-			//	int bestRectIndex = -1;
-			//	Rect bestNode = new Rect();
-
-			//	for (int i = 0; i < rects.Count; ++i)
-			//	{
-			//		int score1 = 0;
-			//		int score2 = 0;
-			//		Rect newNode = ScoreRect((int)rects[i].Width, (int)rects[i].Height, method, ref score1, ref score2);
-
-			//		if (score1 < bestScore1 || (score1 == bestScore1 && score2 < bestScore2))
-			//		{
-			//			bestScore1 = score1;
-			//			bestScore2 = score2;
-			//			bestNode = newNode;
-			//			bestRectIndex = i;
-			//		}
-			//	}
-
-			//	if (bestRectIndex == -1)
-			//		return;
-
-			//	PlaceRect(bestNode);
-   //             dst.Add(bestNode);
-			//	rects.RemoveAt(bestRectIndex);
-			//}
-		}
+            return rtn.ToList();
+        }
 
 		public void Remove(Rect rect)
 		{
@@ -490,7 +500,7 @@ namespace SpriteAnimator.Utils
 				// New node at the top side of the used node.
 				if (usedNode.Y > freeNode.Y && usedNode.Y < freeNode.Y + freeNode.Height)
 				{
-					Rect newNode = freeNode;
+					Rect newNode = new Rect(freeNode);
 					newNode.Height = usedNode.Y - newNode.Y;
 					freeRectangles.Add(newNode);
 				}
@@ -498,7 +508,7 @@ namespace SpriteAnimator.Utils
 				// New node at the bottom side of the used node.
 				if (usedNode.Y + usedNode.Height < freeNode.Y + freeNode.Height)
 				{
-					Rect newNode = freeNode;
+					Rect newNode = new Rect(freeNode);
 					newNode.Y = usedNode.Y + usedNode.Height;
 					newNode.Height = freeNode.Y + freeNode.Height - (usedNode.Y + usedNode.Height);
 					freeRectangles.Add(newNode);
@@ -510,7 +520,7 @@ namespace SpriteAnimator.Utils
 				// New node at the left side of the used node.
 				if (usedNode.X > freeNode.X && usedNode.X < freeNode.X + freeNode.Width)
 				{
-					Rect newNode = freeNode;
+					Rect newNode = new Rect(freeNode);
 					newNode.Width = usedNode.X - newNode.X;
 					freeRectangles.Add(newNode);
 				}
@@ -518,7 +528,7 @@ namespace SpriteAnimator.Utils
 				// New node at the right side of the used node.
 				if (usedNode.X + usedNode.Width < freeNode.X + freeNode.Width)
 				{
-					Rect newNode = freeNode;
+					Rect newNode = new Rect(freeNode);
 					newNode.X = usedNode.X + usedNode.Width;
 					newNode.Width = freeNode.X + freeNode.Width - (usedNode.X + usedNode.Width);
 					freeRectangles.Add(newNode);

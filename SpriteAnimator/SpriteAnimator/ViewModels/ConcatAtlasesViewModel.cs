@@ -65,6 +65,7 @@ namespace SpriteAnimator.ViewModels
             if (selectedTexturePacker == null || currentAtlas == null || otherAtlas == null)
                 return;
             selectedTexturePacker.Reset();
+            selectedTexturePacker.SetPackingMethod(this.selectedAlgorithm);
             resultRectangles.Clear();
 			var listOfSubTexturesToChange = new List<Tuple<SubTextureViewModel, BitmapSource>>();
 			if (!PreserveSourceOrder)
@@ -83,22 +84,50 @@ namespace SpriteAnimator.ViewModels
                 resultRectangles.Add(result);
                 arguments.Add(new StitchImageArguments() { Source = currentImage, DestinationRect = result.ToInt32Rect(), SourceRect = currentImageRect.ToInt32Rect() });
             }
-            foreach (var item in listOfSubTexturesToChange.OrderBy(x => x.Item1.Bounds.Area))
-			{
-				var st = item.Item1;
-                var result = selectedTexturePacker.Pack(st.Bounds);
-                if (result == null)
-                    continue;
-                resultRectangles.Add(result);
-                var argument = new StitchImageArguments()
-				{
-					Name = st.Name,
-					Source = new CroppedBitmap(item.Item2, st.Bounds.ToInt32Rect()),
-					SourceRect = st.Bounds.ToInt32Rect(),
-					DestinationRect = result.ToInt32Rect()
-				};
-				arguments.Add(argument);
-			}
+
+            var ordered = (orderByAreaDescending) ? listOfSubTexturesToChange.OrderByDescending(x => x.Item1.Bounds.Area).ToList() : listOfSubTexturesToChange.OrderBy(x => x.Item1.Bounds.Area).ToList();
+
+            if (!ConcatAllAtOnce)
+            {
+                foreach (var item in ordered)
+                {
+                    var st = item.Item1;
+                    var result = selectedTexturePacker.Pack(st.Bounds);
+                    if (result == null)
+                        continue;
+                    resultRectangles.Add(result);
+                    var argument = new StitchImageArguments()
+                    {
+                        Name = st.Name,
+                        Source = new CroppedBitmap(item.Item2, st.Bounds.ToInt32Rect()),
+                        SourceRect = st.Bounds.ToInt32Rect(),
+                        DestinationRect = result.ToInt32Rect()
+                    };
+                    arguments.Add(argument);
+                }
+            }
+            else
+            {
+                var results = selectedTexturePacker.PackAll(ordered.Select(x => x.Item1.Bounds)).ToList();
+                for (int i = 0; i < ordered.Count; ++i)
+                {
+                    var item = ordered[i];
+                    var st = item.Item1;
+                    var result = results[i];
+                    if (result == null)
+                        continue;
+                    resultRectangles.Add(result);
+                    var argument = new StitchImageArguments()
+                    {
+                        Name = st.Name,
+                        Source = new CroppedBitmap(item.Item2, st.Bounds.ToInt32Rect()),
+                        SourceRect = st.Bounds.ToInt32Rect(),
+                        DestinationRect = result.ToInt32Rect()
+                    };
+                    arguments.Add(argument);
+                }
+            }
+            
             var newResult = ImageUtil.StitchImages(currentImage.DpiX, currentImage.DpiY, currentImage.Format, arguments);
 			ResultImage = newResult;
 		}
@@ -207,20 +236,48 @@ namespace SpriteAnimator.ViewModels
 			}
 		}
 
-		//public List<MaxRectsBinPack.GrowDirection> GrowDirections { get; set; }
-		//private MaxRectsBinPack.GrowDirection selectedGrowDirection = MaxRectsBinPack.GrowDirection.DoNotGrow;
-		//public MaxRectsBinPack.GrowDirection SelectedGrowDirection
-		//{
-		//	get { return selectedGrowDirection; }
-		//	set
-		//	{
-		//		if (value == selectedGrowDirection)
-		//			return;
-		//		selectedGrowDirection = value;
-		//		NotifyOfPropertyChange(() => SelectedGrowDirection);
-		//		ProcessAtlases();
-		//	}
-		//}
+        private bool concatAllAtOnce = false;
+        public bool ConcatAllAtOnce
+        {
+            get { return concatAllAtOnce; }
+            set
+            {
+                if (value == concatAllAtOnce)
+                    return;
+                concatAllAtOnce = value;
+                NotifyOfPropertyChange(() => ConcatAllAtOnce);
+                ProcessAtlases();
+            }
+        }
+
+        private bool orderByAreaDescending = false;
+        public bool OrderByAreaDescending
+        {
+            get { return orderByAreaDescending; }
+            set
+            {
+                if (value == orderByAreaDescending)
+                    return;
+                orderByAreaDescending = value;
+                NotifyOfPropertyChange(() => OrderByAreaDescending);
+                ProcessAtlases();
+            }
+        }
+
+        //public List<MaxRectsBinPack.GrowDirection> GrowDirections { get; set; }
+        //private MaxRectsBinPack.GrowDirection selectedGrowDirection = MaxRectsBinPack.GrowDirection.DoNotGrow;
+        //public MaxRectsBinPack.GrowDirection SelectedGrowDirection
+        //{
+        //	get { return selectedGrowDirection; }
+        //	set
+        //	{
+        //		if (value == selectedGrowDirection)
+        //			return;
+        //		selectedGrowDirection = value;
+        //		NotifyOfPropertyChange(() => SelectedGrowDirection);
+        //		ProcessAtlases();
+        //	}
+        //}
 
         public List<ITexturePacker> TexturePackers { get { return texturePackers; } }
         private ITexturePacker selectedTexturePacker;
