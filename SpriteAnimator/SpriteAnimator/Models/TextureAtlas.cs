@@ -16,7 +16,7 @@ namespace SpriteAnimator.Models
             SubTextures = new List<SubTexture>();
         }
 
-        [XmlAttribute("imagePath")]
+        [XmlAttribute("ImagePath")]
         public String ImagePath { get; set; }
 
         [XmlElement("SubTexture")]

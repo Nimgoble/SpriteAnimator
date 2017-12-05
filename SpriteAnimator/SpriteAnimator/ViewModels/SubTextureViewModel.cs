@@ -7,18 +7,17 @@ using System.Threading.Tasks;
 using Caliburn.Micro;
 
 using SpriteAnimator.Models;
+using SpriteAnimator.Utils;
 
 namespace SpriteAnimator.ViewModels
 {
     public class SubTextureViewModel : Screen
     {
+		private Rect bounds;
         public SubTextureViewModel(SubTexture subTexture)
         {
             this.Name = subTexture.Name;
-            this.X = subTexture.X;
-            this.Y = subTexture.Y;
-            this.Width = subTexture.Width;
-            this.Height = subTexture.Height;
+			this.bounds = new Rect(subTexture.X, subTexture.Y, subTexture.Width, subTexture.Height);
         }
 
         #region Properties
@@ -35,61 +34,66 @@ namespace SpriteAnimator.ViewModels
                 NotifyOfPropertyChange(() => Name);
             }
         }
-        private Int32 x = -1;
         public Int32 X
         {
-            get { return x; }
+            get { return bounds.X; }
             set
             {
-                if (value == x)
+                if (value == bounds.X)
                     return;
 
-                x = value;
+                bounds.X = value;
                 NotifyOfPropertyChange(() => X);
             }
         }
-
-        private Int32 y = -1;
         public Int32 Y
         {
-            get { return y; }
+            get { return bounds.Y; }
             set
             {
-                if (value == y)
+                if (value == bounds.Y)
                     return;
 
-                y = value;
+				bounds.Y = value;
                 NotifyOfPropertyChange(() => Y);
             }
         }
-
-        private Int32 width = -1;
         public Int32 Width
         {
-            get { return width; }
+            get { return bounds.Width; }
             set
             {
-                if (value == width)
+                if (value == bounds.Width)
                     return;
 
-                width = value;
+				bounds.Width = value;
                 NotifyOfPropertyChange(() => Width);
             }
         }
-
-        private Int32 height = -1;
         public Int32 Height
         {
-            get { return height; }
+            get { return bounds.Height; }
             set
             {
-                if (value == height)
+                if (value == bounds.Height)
                     return;
 
-                height = value;
+				bounds.Height = value;
                 NotifyOfPropertyChange(() => Height);
             }
         }
+
+		public Rect Bounds
+		{
+			get { return bounds; }
+			set
+			{
+				if (value == null)
+					return;
+				this.bounds = value;
+				NotifyOfPropertyChange(() => Bounds);
+			}
+		}
         #endregion
     }
 }

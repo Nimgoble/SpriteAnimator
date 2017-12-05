@@ -14,10 +14,10 @@ namespace SpriteAnimator.ViewModels
 {
     public class AnimationViewModel : Screen
     {
-        public AnimationViewModel(String name, List<SubTexture> subTextures, BitmapImage image)
+        public AnimationViewModel(String name, List<SubTextureViewModel> subTextures, BitmapImage image)
         {
             this.Name = name;
-            foreach (SubTexture subTexture in subTextures)
+            foreach (SubTextureViewModel subTexture in subTextures)
                 frames.Add(new AnimationFrameViewModel(subTexture, image));
 
             frames.OrderBy(x => x.Index);

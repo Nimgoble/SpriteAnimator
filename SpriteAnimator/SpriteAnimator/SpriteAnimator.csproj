@@ -46,6 +46,9 @@
     <Reference Include="Caliburn.Micro">
       <HintPath>..\packages\Caliburn.Micro.1.5.2\lib\net45\Caliburn.Micro.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -77,16 +80,24 @@
     <Compile Include="Events\ImageLoadedEvent.cs" />
     <Compile Include="Models\SubTexture.cs" />
     <Compile Include="Models\TextureAtlas.cs" />
+    <Compile Include="Utils\ImageUtil.cs" />
+    <Compile Include="Utils\MaxRectsBinPack.cs" />
+    <Compile Include="Utils\Rect.cs" />
     <Compile Include="ViewModels\AnimationFrameViewModel.cs" />
     <Compile Include="ViewModels\AnimationViewModel.cs" />
+    <Compile Include="ViewModels\ConcatAtlasesViewModel.cs" />
     <Compile Include="ViewModels\CreateAtlasPromptViewModel.cs" />
     <Compile Include="ViewModels\ImageBlobsViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\OpenSetViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Compile Include="ViewModels\SubTextureViewModel.cs" />
     <Compile Include="ViewModels\TextureAtlasViewModel.cs" />
     <Compile Include="Views\AnimationView.xaml.cs">
       <DependentUpon>AnimationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ConcatAtlasesView.xaml.cs">
+      <DependentUpon>ConcatAtlasesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\CreateAtlasPromptView.xaml.cs">
       <DependentUpon>CreateAtlasPromptView.xaml</DependentUpon>
@@ -135,6 +146,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Views\AnimationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ConcatAtlasesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

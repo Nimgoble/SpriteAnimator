@@ -86,7 +86,7 @@
                 </ListView.ItemTemplate>
             </ListView>
         </ScrollViewer>
-        <Border 
+		<Border 
                 Padding="10"
                 BorderBrush="Black"
                 BorderThickness="1"
@@ -94,9 +94,7 @@
                 Height="128"
                 Grid.Column="1"
             >
-            <Image x:Name="currentFrame" Source="{Binding CurrentImage, TargetNullValue={StaticResource ResourceKey=DefaultImage}}" />
-        </Border>
-        
-        
-    </Grid>
+			<Image x:Name="currentFrame" Source="{Binding CurrentImage, TargetNullValue={StaticResource ResourceKey=DefaultImage}}" />
+		</Border>
+	</Grid>
 </UserControl>

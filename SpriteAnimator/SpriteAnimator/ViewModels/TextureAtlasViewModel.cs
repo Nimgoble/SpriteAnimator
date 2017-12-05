@@ -34,7 +34,10 @@ namespace SpriteAnimator.ViewModels
         {
             image = new BitmapImage(new Uri(imagePath));
 
-            List<String> animationNames = (from subTexture in textureAtlas.SubTextures select subTexture.Name.Substring(0, subTexture.Name.Length - 4)).ToList();
+			foreach (var st in textureAtlas.SubTextures)
+				this.subtextures.Add(new SubTextureViewModel(st));
+
+            List<String> animationNames = (from subTexture in subtextures select subTexture.Name.Substring(0, subTexture.Name.Length - 4)).ToList();
             HashSet<String> uniqueAnimationNames = new HashSet<String>(animationNames);
             foreach (String animationName in uniqueAnimationNames)
             {
@@ -43,14 +46,17 @@ namespace SpriteAnimator.ViewModels
                     new AnimationViewModel
                     (
                         animationName,
-                        (from subTexture in textureAtlas.SubTextures where (subTexture.Name.Substring(0, subTexture.Name.Length - 4) == animationName) select subTexture).ToList(),
+                        (from subTexture in subtextures where (subTexture.Name.Substring(0, subTexture.Name.Length - 4) == animationName) select subTexture).ToList(),
                         image
                     )
                 );
             }
         }
 
-        #region Properties
+		#region Properties
+		private ObservableCollection<SubTextureViewModel> subtextures = new ObservableCollection<SubTextureViewModel>();
+		public ObservableCollection<SubTextureViewModel> SubTextures { get { return subtextures; } }
+
         private ObservableCollection<AnimationViewModel> animations = new ObservableCollection<AnimationViewModel>();
         public ObservableCollection<AnimationViewModel> Animations
         {

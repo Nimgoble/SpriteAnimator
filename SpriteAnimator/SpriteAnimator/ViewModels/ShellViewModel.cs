@@ -14,6 +14,7 @@ namespace SpriteAnimator.ViewModels
         private MainViewModel mainViewModel;
         private ImageBlobsViewModel imageBlobsViewModel;
         private OpenSetViewModel openSetViewModel;
+		private ConcatAtlasesViewModel concatAtlasesViewModel;
         private readonly IEventAggregator eventAggregator;
         private readonly IWindowManager windowManager;
         public ShellViewModel(IEventAggregator eventAggregator, IWindowManager windowManager)
@@ -25,6 +26,7 @@ namespace SpriteAnimator.ViewModels
             openSetViewModel = new OpenSetViewModel(eventAggregator, windowManager);
             mainViewModel = new MainViewModel(eventAggregator);
             imageBlobsViewModel = new ImageBlobsViewModel(eventAggregator);
+			concatAtlasesViewModel = new ConcatAtlasesViewModel(eventAggregator, windowManager);
             this.ActivateItem(mainViewModel);
         }
 
@@ -41,6 +43,10 @@ namespace SpriteAnimator.ViewModels
         {
             this.ActivateItem(imageBlobsViewModel);
         }
+		public void SelectConcat()
+		{
+			this.ActivateItem(concatAtlasesViewModel);
+		}
         #endregion
 
 		#region IHandle

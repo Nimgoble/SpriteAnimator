@@ -13,7 +13,7 @@ namespace SpriteAnimator.ViewModels
 {
     public class AnimationFrameViewModel : Screen
     {
-        public AnimationFrameViewModel(SubTexture subTexture, BitmapImage image)
+        public AnimationFrameViewModel(SubTextureViewModel subTexture, BitmapImage image)
         {
             this.Name = subTexture.Name;
             this.X = subTexture.X;
@@ -26,8 +26,8 @@ namespace SpriteAnimator.ViewModels
             Int32.TryParse(Name.Substring(Name.Length - 4, 4), out frameIndex);
             this.Index = frameIndex;
 
-            this.frameImage = new CroppedBitmap(image, new System.Windows.Int32Rect(x, y, width, height));
-        }
+			this.frameImage = new CroppedBitmap(image, new System.Windows.Int32Rect(x, y, width, height));
+		}
 
         #region Properties
         private String name = String.Empty;
