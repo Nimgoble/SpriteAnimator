@@ -58,7 +58,7 @@ namespace SpriteAnimator.Utils
 			//}
 		}
 
-		public Rect Insert(int width, int height, FreeRectChoiceHeuristic method, GrowDirection growDirection)
+        public Rect Insert(int width, int height, FreeRectChoiceHeuristic method)
 		{
 			Rect newNode = new Rect();
 			int score1 = 0; // Unused in this function. We don't need to know the score after finding the position.
@@ -115,38 +115,49 @@ namespace SpriteAnimator.Utils
 			return newNode;
 		}
 
-		public void Insert(List<Rect> rects, List<Rect> dst, FreeRectChoiceHeuristic method)
+		public void Insert(List<Rect> rects, FreeRectChoiceHeuristic method)
 		{
-			dst.Clear();
+            int score1 = 0;
+            int score2 = 0;
 
-			while (rects.Count > 0)
-			{
-				int bestScore1 = int.MaxValue;
-				int bestScore2 = int.MaxValue;
-				int bestRectIndex = -1;
-				Rect bestNode = new Rect();
+            var orderedByScore = rects.OrderBy(x => ScoreRect(x.Width, x.Height, method, ref score1, ref score2)).ToList();
 
-				for (int i = 0; i < rects.Count; ++i)
-				{
-					int score1 = 0;
-					int score2 = 0;
-					Rect newNode = ScoreRect((int)rects[i].Width, (int)rects[i].Height, method, ref score1, ref score2);
+            for(int i = 0; i < orderedByScore.Count; ++i)
+            {
+                var bestNode = orderedByScore.First();
+                PlaceRect(bestNode);
+                orderedByScore = orderedByScore.GetRange(1, orderedByScore.Count - 1).OrderBy(x => ScoreRect(x.Width, x.Height, method, ref score1, ref score2)).ToList();
+            }
 
-					if (score1 < bestScore1 || (score1 == bestScore1 && score2 < bestScore2))
-					{
-						bestScore1 = score1;
-						bestScore2 = score2;
-						bestNode = newNode;
-						bestRectIndex = i;
-					}
-				}
+			//while (rects.Count > 0)
+			//{
+			//	int bestScore1 = int.MaxValue;
+			//	int bestScore2 = int.MaxValue;
+			//	int bestRectIndex = -1;
+			//	Rect bestNode = new Rect();
 
-				if (bestRectIndex == -1)
-					return;
+			//	for (int i = 0; i < rects.Count; ++i)
+			//	{
+			//		int score1 = 0;
+			//		int score2 = 0;
+			//		Rect newNode = ScoreRect((int)rects[i].Width, (int)rects[i].Height, method, ref score1, ref score2);
 
-				PlaceRect(bestNode);
-				rects.RemoveAt(bestRectIndex);
-			}
+			//		if (score1 < bestScore1 || (score1 == bestScore1 && score2 < bestScore2))
+			//		{
+			//			bestScore1 = score1;
+			//			bestScore2 = score2;
+			//			bestNode = newNode;
+			//			bestRectIndex = i;
+			//		}
+			//	}
+
+			//	if (bestRectIndex == -1)
+			//		return;
+
+			//	PlaceRect(bestNode);
+   //             dst.Add(bestNode);
+			//	rects.RemoveAt(bestRectIndex);
+			//}
 		}
 
 		public void Remove(Rect rect)
@@ -217,6 +228,7 @@ namespace SpriteAnimator.Utils
 			//memset(bestNode, 0, sizeof(Rect));
 
 			bestY = int.MaxValue;
+            bestX = int.MaxValue;
 
 			for (int i = 0; i < freeRectangles.Count; ++i)
 			{
@@ -257,6 +269,7 @@ namespace SpriteAnimator.Utils
 			//memset(&bestNode, 0, sizeof(Rect));
 
 			bestShortSideFit = int.MaxValue;
+            bestLongSideFit = int.MaxValue;
 
 			for (int i = 0; i < freeRectangles.Count; ++i)
 			{
@@ -303,9 +316,10 @@ namespace SpriteAnimator.Utils
 		Rect FindPositionForNewNodeBestLongSideFit(int width, int height, ref int bestShortSideFit, ref int bestLongSideFit)
 		{
 			Rect bestNode = new Rect();
-			//memset(&bestNode, 0, sizeof(Rect));
+            //memset(&bestNode, 0, sizeof(Rect));
 
-			bestLongSideFit = int.MaxValue;
+            bestShortSideFit = int.MaxValue;
+            bestLongSideFit = int.MaxValue;
 
 			for (int i = 0; i < freeRectangles.Count; ++i)
 			{
@@ -355,6 +369,7 @@ namespace SpriteAnimator.Utils
 			//memset(&bestNode, 0, sizeof(Rect));
 
 			bestAreaFit = int.MaxValue;
+            bestShortSideFit = int.MaxValue;
 
 			for (int i = 0; i < freeRectangles.Count; ++i)
 			{
@@ -515,21 +530,34 @@ namespace SpriteAnimator.Utils
 
 		void PruneFreeList()
 		{
-			for (int i = 0; i < freeRectangles.Count; ++i)
-				for (int j = i + 1; j < freeRectangles.Count; ++j)
-				{
-					if (IsContainedIn(freeRectangles[i], freeRectangles[j]))
-					{
-						freeRectangles.RemoveAt(i);
-						--i;
-						break;
-					}
-					if (IsContainedIn(freeRectangles[j], freeRectangles[i]))
-					{
-						freeRectangles.RemoveAt(j);
-						--j;
-					}
-				}
+            var redundantRectangles =
+            (
+                from rect
+                in freeRectangles
+                where freeRectangles.Where(x => x != rect && IsContainedIn(rect, x)).Any()
+                select rect
+            ).ToList();
+            while(redundantRectangles.Any())
+            {
+                var first = redundantRectangles.First();
+                freeRectangles.Remove(first);
+                redundantRectangles.Remove(first);
+            }
+			//for (int i = 0; i < freeRectangles.Count; ++i)
+			//	for (int j = i + 1; j < freeRectangles.Count; ++j)
+			//	{
+			//		if (IsContainedIn(freeRectangles[i], freeRectangles[j]))
+			//		{
+			//			freeRectangles.RemoveAt(i);
+			//			--i;
+			//			break;
+			//		}
+			//		if (IsContainedIn(freeRectangles[j], freeRectangles[i]))
+			//		{
+			//			freeRectangles.RemoveAt(j);
+			//			--j;
+			//		}
+			//	}
 		}
 
 		bool IsContainedIn(Rect a, Rect b)

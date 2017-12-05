@@ -78,28 +78,72 @@
 
 		<Label Grid.Row="0" Grid.Column="2">Result</Label>
         <ScrollViewer Grid.Column="2" Grid.Row="1" Background="White" HorizontalScrollBarVisibility="Visible">
-			<Canvas
-                VerticalAlignment="Top" 
-                HorizontalAlignment="Left"
-                Height="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Background.ImageSource.PixelHeight}"
-                Width="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Background.ImageSource.PixelWidth}"
+            <ListView 
+                ItemsSource="{Binding ResultRectangles}"
             >
-				<Canvas.Background>
-					<ImageBrush 
-                        ImageSource="{Binding ResultImage, TargetNullValue=Content/default.png}"
-                        Stretch="Uniform"
-                        AlignmentX="Left"
-                        AlignmentY="Top"
-                    >
-						<ImageBrush.Transform>
-							<TransformGroup>
-								<ScaleTransform ScaleX="1" ScaleY="1" />
-								<TranslateTransform X="0" Y ="0" />
-							</TransformGroup>
-						</ImageBrush.Transform>
-					</ImageBrush>
-				</Canvas.Background>
-			</Canvas>
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas
+                            VerticalAlignment="Top" 
+                            HorizontalAlignment="Left"
+                            Height="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Background.ImageSource.PixelHeight}"
+                            Width="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Background.ImageSource.PixelWidth}"
+                        >
+                            <Canvas.Background>
+                                <ImageBrush 
+                                    ImageSource="{Binding ResultImage, TargetNullValue=Content/default.png}"
+                                    Stretch="Uniform"
+                                    AlignmentX="Left"
+                                    AlignmentY="Top"
+                                >
+                                    <ImageBrush.Transform>
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                                            <TranslateTransform X="0" Y ="0" />
+                                        </TransformGroup>
+                                    </ImageBrush.Transform>
+                                </ImageBrush>
+                            </Canvas.Background>
+                        </Canvas>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Style.Resources>
+                            <!-- Background for Selected ListViewItem -->
+                            <SolidColorBrush 
+                            x:Key="{x:Static SystemColors.HighlightBrushKey}"
+                            Color="DarkBlue" 
+                            Opacity="0.25" 
+                        />
+                            <SolidColorBrush
+                                x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}"
+                                Color="DarkBlue"
+                                Opacity="0.25"
+                            />
+                        </Style.Resources>
+
+                        <Setter Property="Canvas.Left" Value="{Binding Path=X}"/>
+                        <Setter Property="Canvas.Top" Value="{Binding Path=Y}"/>
+                        <Setter Property="Padding" Value="0"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Rectangle 
+                            Width="{Binding Path=Width, TargetNullValue=0}" 
+                            Height="{Binding Path=Height, TargetNullValue=0}" 
+                            Focusable="True" 
+                            Opacity="1" 
+                            Stroke="DarkBlue"
+                            SnapsToDevicePixels="True"
+                            StrokeThickness="1"
+                        >
+                        </Rectangle>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+			
 		</ScrollViewer>
 
 		<Border Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1">

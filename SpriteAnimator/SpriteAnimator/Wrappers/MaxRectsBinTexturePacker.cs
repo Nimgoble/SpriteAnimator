@@ -19,7 +19,7 @@ namespace SpriteAnimator.Wrappers
         public string Name { get { return "Max Rects Bin"; } }
         public Rect Pack(Rect source)
         {
-            return packer.Insert(source.Width, source.Height, PackingMethodToFreeRectChoiceHeuristic(packingMethod), MaxRectsBinPack.GrowDirection.DoNotGrow);
+            return packer.Insert(source.Width, source.Height, PackingMethodToFreeRectChoiceHeuristic(packingMethod));
         }
         public void SetPackingMethod(PackingMethod packingMethod)
         {
@@ -36,7 +36,7 @@ namespace SpriteAnimator.Wrappers
         public IEnumerable<PackingMethod> AvailablePackingMethods { get { return packingMethods; } }
         public void Reset()
         {
-            this.packer = new MaxRectsBinPack(int.MaxValue, int.MaxValue, false);
+            this.packer = new MaxRectsBinPack(int.MaxValue - 1, int.MaxValue - 1, false);
         }
         private MaxRectsBinPack.FreeRectChoiceHeuristic PackingMethodToFreeRectChoiceHeuristic(PackingMethod packingMethod)
         {

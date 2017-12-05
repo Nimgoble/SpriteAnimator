@@ -65,31 +65,31 @@ namespace SpriteAnimator.ViewModels
             if (selectedTexturePacker == null || currentAtlas == null || otherAtlas == null)
                 return;
             selectedTexturePacker.Reset();
-            var dst = preserveSourceOrder ? (from st in currentAtlas.SubTextures select st.Bounds).ToList() : null;
+            resultRectangles.Clear();
 			var listOfSubTexturesToChange = new List<Tuple<SubTextureViewModel, BitmapSource>>();
 			if (!PreserveSourceOrder)
 			{
 				foreach(var st in currentAtlas.SubTextures)
 					listOfSubTexturesToChange.Add(new Tuple<SubTextureViewModel, BitmapSource>(st, currentAtlas.Image));
 			}
-
 			foreach (var st in otherAtlas.SubTextures)
 				listOfSubTexturesToChange.Add(new Tuple<SubTextureViewModel, BitmapSource>(st, otherAtlas.Image));
-			var src = (from st in otherAtlas.SubTextures select st.Bounds).ToList();
-			Dictionary<SubTextureViewModel, Rect> moveLocations = new Dictionary<SubTextureViewModel, Rect>();
-			var arguments = new List<StitchImageArguments>();
 
+			var arguments = new List<StitchImageArguments>();
             if(PreserveSourceOrder)
             {
-                selectedTexturePacker.Pack(new Rect(0, 0, currentImage.PixelWidth, currentImage.PixelHeight));
+                var currentImageRect = new Rect(0, 0, currentImage.PixelWidth, currentImage.PixelHeight);
+                var result = selectedTexturePacker.Pack(currentImageRect);
+                resultRectangles.Add(result);
+                arguments.Add(new StitchImageArguments() { Source = currentImage, DestinationRect = result.ToInt32Rect(), SourceRect = currentImageRect.ToInt32Rect() });
             }
-
-            foreach (var item in listOfSubTexturesToChange.OrderByDescending(x => x.Item1.Bounds.Area))
+            foreach (var item in listOfSubTexturesToChange.OrderBy(x => x.Item1.Bounds.Area))
 			{
 				var st = item.Item1;
                 var result = selectedTexturePacker.Pack(st.Bounds);
                 if (result == null)
                     continue;
+                resultRectangles.Add(result);
                 var argument = new StitchImageArguments()
 				{
 					Name = st.Name,
@@ -99,14 +99,6 @@ namespace SpriteAnimator.ViewModels
 				};
 				arguments.Add(argument);
 			}
-			if(PreserveSourceOrder)
-			{
-				var currentImageRect = new System.Windows.Int32Rect(0, 0, currentImage.PixelWidth, currentImage.PixelHeight);
-				arguments.Add(new StitchImageArguments() { Source = currentImage, DestinationRect = currentImageRect, SourceRect = currentImageRect });
-			}
-			//var wiggleRoom = 1000;
-            //var totalWidth = packer.binWidth + wiggleRoom;
-            //var totalHeight = packer.binHeight + wiggleRoom;
             var newResult = ImageUtil.StitchImages(currentImage.DpiX, currentImage.DpiY, currentImage.Format, arguments);
 			ResultImage = newResult;
 		}
@@ -248,6 +240,8 @@ namespace SpriteAnimator.ViewModels
             }
         }
 
+        private ObservableCollection<Rect> resultRectangles = new ObservableCollection<Rect>();
+        public ObservableCollection<Rect> ResultRectangles { get { return resultRectangles; } }
 
         //private ObservableCollection<Blob> blobs = new ObservableCollection<Blob>();
         //public ObservableCollection<Blob> Blobs
