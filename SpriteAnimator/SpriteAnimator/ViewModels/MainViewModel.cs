@@ -144,7 +144,6 @@ namespace SpriteAnimator.ViewModels
         }
         #endregion
 
-
         #region Properties
         private String imagePath = String.Empty;
         public String ImagePath
