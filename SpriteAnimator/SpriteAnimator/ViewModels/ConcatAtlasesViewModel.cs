@@ -145,6 +145,11 @@ namespace SpriteAnimator.ViewModels
             
             var newResult = ImageUtil.StitchImages(currentImage.DpiX, currentImage.DpiY, currentImage.Format, arguments);
             var newResultAtlas = new TextureAtlasViewModel();
+			if(PreserveSourceOrder)
+			{
+				//Should prooooobably be making a copy of these.
+				currentAtlas.SubTextures.OrderBy(x => x.Name).ToList().ForEach(x => { newResultAtlas.SubTextures.Add(x); });
+			}
             arguments.OrderBy(x => x.Name).ToList().ForEach
             (
                 x =>
