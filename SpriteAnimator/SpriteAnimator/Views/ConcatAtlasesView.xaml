@@ -112,30 +112,30 @@
                         <Style.Resources>
                             <!-- Background for Selected ListViewItem -->
                             <SolidColorBrush 
-                            x:Key="{x:Static SystemColors.HighlightBrushKey}"
-                            Color="DarkBlue" 
-                            Opacity="0.25" 
-                        />
+                                x:Key="{x:Static SystemColors.HighlightBrushKey}"
+                                Color="{Binding Color}" 
+                                Opacity="0.25" 
+                            />
                             <SolidColorBrush
                                 x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}"
-                                Color="DarkBlue"
+                                Color="{Binding Color}"
                                 Opacity="0.25"
                             />
                         </Style.Resources>
 
-                        <Setter Property="Canvas.Left" Value="{Binding Path=X}"/>
-                        <Setter Property="Canvas.Top" Value="{Binding Path=Y}"/>
+                        <Setter Property="Canvas.Left" Value="{Binding Path=Model.X}"/>
+                        <Setter Property="Canvas.Top" Value="{Binding Path=Model.Y}"/>
                         <Setter Property="Padding" Value="0"/>
                     </Style>
                 </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Rectangle 
-                            Width="{Binding Path=Width, TargetNullValue=0}" 
-                            Height="{Binding Path=Height, TargetNullValue=0}" 
+                            Width="{Binding Path=Model.Width, TargetNullValue=0}" 
+                            Height="{Binding Path=Model.Height, TargetNullValue=0}" 
                             Focusable="True" 
                             Opacity="1" 
-                            Stroke="DarkBlue"
+                            Stroke="{Binding Color}"
                             SnapsToDevicePixels="True"
                             StrokeThickness="1"
                         >

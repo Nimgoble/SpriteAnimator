@@ -85,6 +85,8 @@
     <Compile Include="Models\SubTexture.cs" />
     <Compile Include="Models\TextureAtlas.cs" />
     <Compile Include="Utils\ImageUtil.cs" />
+    <Compile Include="Utils\MaxRectsPacker.cs" />
+    <Compile Include="ViewModels\RectangleViewModel.cs" />
     <Compile Include="Wrappers\ChevyRayTexturePacker.cs" />
     <Compile Include="Wrappers\ITexturePacker.cs" />
     <Compile Include="Utils\MaxRectsBinPack.cs" />
@@ -123,6 +125,7 @@
     </Compile>
     <Compile Include="Wrappers\MattPerdeckTexturePacker.cs" />
     <Compile Include="Wrappers\MaxRectsBinTexturePacker.cs" />
+    <Compile Include="Wrappers\MaxRectsTexturePacker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppBootstrapper.cs" />

@@ -25,5 +25,7 @@ namespace SpriteAnimator.Wrappers
         void SetPackingMethod(PackingMethod packingMethod);
         IEnumerable<PackingMethod> AvailablePackingMethods { get; }
         void Reset();
+        IEnumerable<Rect> GetFreeRectangles();
+        Rect GetTextureSize();
     }
 }

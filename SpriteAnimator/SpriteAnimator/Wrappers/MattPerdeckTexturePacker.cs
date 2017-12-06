@@ -28,6 +28,8 @@ namespace SpriteAnimator.Wrappers
         private static List<PackingMethod> packingMethods = new List<PackingMethod>();
         public IEnumerable<PackingMethod> AvailablePackingMethods { get { return packingMethods; } }
         public void Reset() { }
+        public IEnumerable<Rect> GetFreeRectangles() { return null; }
+        public Rect GetTextureSize() { return null; }
 
         //public class Sprite : ISprite
         //{

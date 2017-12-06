@@ -8,33 +8,34 @@ using SpriteAnimator.Utils;
 
 namespace SpriteAnimator.Wrappers
 {
-    class ChevyRayTexturePacker : ITexturePacker
+    public class MaxRectsTexturePacker : ITexturePacker
     {
-        private RectanglePacker packer = new RectanglePacker();
-        private PackingMethod packingMethod;
-        public ChevyRayTexturePacker()
+        private MaxRectsPacker packer;
+        public MaxRectsTexturePacker()
         {
+            Reset();
         }
-        public string Name { get { return "Chevy Ray"; } }
+        public string Name { get { return "Max Rects Packer(With Padding)"; } }
         public Rect Pack(Rect source)
         {
-            int x, y;
-            return packer.Pack(source.Width, source.Height, out x, out y) ? new Rect(x, y, source.Width, source.Height) : null;
+            return packer.Add(source.Width, source.Height);
         }
         public IEnumerable<Rect> PackAll(IEnumerable<Rect> source)
         {
-            return source.Select(x => Pack(x)).ToList();
+            return packer.Add(source.ToList());
         }
-        public void SetPackingMethod(PackingMethod packingMethod) { }
+        public void SetPackingMethod(PackingMethod packingMethod)
+        {
+        }
         private static List<PackingMethod> packingMethods = new List<PackingMethod>();
         public IEnumerable<PackingMethod> AvailablePackingMethods { get { return packingMethods; } }
         public void Reset()
         {
-            this.packer = new RectanglePacker();
+            this.packer = new MaxRectsPacker(4096, 4096, 2, false, false);
         }
         public IEnumerable<Rect> GetFreeRectangles()
         {
-            return new List<Rect>();
+            return packer.FreeRects;
         }
         public Rect GetTextureSize()
         {

@@ -9,14 +9,17 @@ namespace SpriteAnimator.Utils
 {
 	public class MaxRectsBinPack
 	{
-		public int binWidth = 0;
-		public int binHeight = 0;
+		private int binWidth = 0;
+		private int binHeight = 0;
 		public bool allowRotations;
 
-		public List<Rect> usedRectangles = new List<Rect>();
-		public List<Rect> freeRectangles = new List<Rect>();
+		private List<Rect> usedRectangles = new List<Rect>();
+		private List<Rect> freeRectangles = new List<Rect>();
+        public List<Rect> FreeRects { get { return freeRectangles; } }
+        public int Width { get { return binWidth; } }
+        public int Height { get { return binHeight; } }
 
-		public enum FreeRectChoiceHeuristic
+        public enum FreeRectChoiceHeuristic
 		{
 			RectBestShortSideFit, //< -BSSF: Positions the rectangle against the short side of a free rectangle into which it fits the best.
 			RectBestLongSideFit, //< -BLSF: Positions the rectangle against the long side of a free rectangle into which it fits the best.

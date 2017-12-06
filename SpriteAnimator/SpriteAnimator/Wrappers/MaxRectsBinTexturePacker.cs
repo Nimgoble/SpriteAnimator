@@ -42,6 +42,14 @@ namespace SpriteAnimator.Wrappers
         {
             this.packer = new MaxRectsBinPack(int.MaxValue - 1, int.MaxValue - 1, false);
         }
+        public IEnumerable<Rect> GetFreeRectangles()
+        {
+            return packer.FreeRects;
+        }
+        public Rect GetTextureSize()
+        {
+            return new Rect(0, 0, packer.Width, packer.Height);
+        }
         private MaxRectsBinPack.FreeRectChoiceHeuristic PackingMethodToFreeRectChoiceHeuristic(PackingMethod packingMethod)
         {
             switch(packingMethod)

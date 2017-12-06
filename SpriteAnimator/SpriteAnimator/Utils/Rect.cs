@@ -28,9 +28,20 @@ namespace SpriteAnimator.Utils
 		public int Width { get; set; }
 		public int Height { get; set; }
         public int Area { get { return Width * Height; } }
+        public int Top { get { return Y; } }
+        public int Right { get { return X + Width; } }
+        public int Bottom { get { return Y + Height; } }
+        public int Left { get { return X; } }
 		public System.Windows.Int32Rect ToInt32Rect()
 		{
 			return new System.Windows.Int32Rect(X, Y, Width, Height);
 		}
+        public bool IntersectsWith(Rect other)
+        {
+            return (other.X < this.X + this.Width) &&
+            (this.X < (other.X + other.Width)) &&
+            (other.Y < this.Y + this.Height) &&
+            (this.Y < other.Y + other.Height);
+        }
     }
 }

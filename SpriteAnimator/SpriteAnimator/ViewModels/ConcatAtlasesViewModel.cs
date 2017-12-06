@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.IO;
 using System.Windows.Media.Imaging;
+using System.Windows.Media;
 using Microsoft.Win32;
 using System.Xml.Serialization;
 
@@ -30,6 +31,7 @@ namespace SpriteAnimator.ViewModels
 			this.windowManager = windowManager;
 			defaultImage = new BitmapImage(new Uri(@"pack://application:,,,/Content/default.png"));
 			this.eventAggregator.Subscribe(this);
+            texturePackers.Add(new MaxRectsTexturePacker());
             texturePackers.Add(new MaxRectsBinTexturePacker());
             texturePackers.Add(new ChevyRayTexturePacker());
             SelectedTexturePacker = texturePackers.First();
@@ -96,8 +98,11 @@ namespace SpriteAnimator.ViewModels
             {
                 var currentImageRect = new Rect(0, 0, currentImage.PixelWidth, currentImage.PixelHeight);
                 var result = selectedTexturePacker.Pack(currentImageRect);
-                resultRectangles.Add(result);
-                arguments.Add(new StitchImageArguments() { Source = currentImage, DestinationRect = result.ToInt32Rect(), SourceRect = currentImageRect.ToInt32Rect() });
+                if (result != null)
+                {
+                    resultRectangles.Add(new RectangleViewModel(result, Colors.DarkBlue));
+                    arguments.Add(new StitchImageArguments() { Source = currentImage, DestinationRect = result.ToInt32Rect(), SourceRect = currentImageRect.ToInt32Rect() });
+                }
             }
 
             var ordered = (orderByAreaDescending) ? listOfSubTexturesToChange.OrderByDescending(x => x.Item1.Bounds.Area).ToList() : listOfSubTexturesToChange.OrderBy(x => x.Item1.Bounds.Area).ToList();
@@ -110,7 +115,7 @@ namespace SpriteAnimator.ViewModels
                     var result = selectedTexturePacker.Pack(st.Bounds);
                     if (result == null)
                         continue;
-                    resultRectangles.Add(result);
+                    resultRectangles.Add(new RectangleViewModel(result, Colors.DarkBlue));
                     var argument = new StitchImageArguments()
                     {
                         Name = st.Name,
@@ -131,7 +136,7 @@ namespace SpriteAnimator.ViewModels
                     var result = results[i];
                     if (result == null)
                         continue;
-                    resultRectangles.Add(result);
+                    resultRectangles.Add(new RectangleViewModel(result, Colors.DarkBlue));
                     var argument = new StitchImageArguments()
                     {
                         Name = st.Name,
@@ -141,6 +146,13 @@ namespace SpriteAnimator.ViewModels
                     };
                     arguments.Add(argument);
                 }
+            }
+
+            var freeRects = selectedTexturePacker.GetFreeRectangles();
+            if(freeRects != null && freeRects.Any())
+            {
+                foreach (var freeRect in freeRects)
+                    resultRectangles.Add(new RectangleViewModel(freeRect, Colors.Red));
             }
             
             var newResult = ImageUtil.StitchImages(currentImage.DpiX, currentImage.DpiY, currentImage.Format, arguments);
@@ -362,8 +374,8 @@ namespace SpriteAnimator.ViewModels
             }
         }
 
-        private ObservableCollection<Rect> resultRectangles = new ObservableCollection<Rect>();
-        public ObservableCollection<Rect> ResultRectangles { get { return resultRectangles; } }
+        private ObservableCollection<RectangleViewModel> resultRectangles = new ObservableCollection<RectangleViewModel>();
+        public ObservableCollection<RectangleViewModel> ResultRectangles { get { return resultRectangles; } }
 
         #endregion
     }
