@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 using SpriteAnimator.Utils;
 
 namespace SpriteAnimator.Wrappers
@@ -26,6 +27,7 @@ namespace SpriteAnimator.Wrappers
         IEnumerable<PackingMethod> AvailablePackingMethods { get; }
         void Reset();
         IEnumerable<Rect> GetFreeRectangles();
-        Rect GetTextureSize();
+        Size GetTextureSize();
+        void SetTextureSize(Size size);
     }
 }

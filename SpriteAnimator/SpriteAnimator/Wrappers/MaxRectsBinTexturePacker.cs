@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 using SpriteAnimator.Utils;
 
@@ -12,6 +13,7 @@ namespace SpriteAnimator.Wrappers
     {
         private MaxRectsBinPack packer;
         private PackingMethod packingMethod = PackingMethod.BestAreaFit;
+        private Size size;
         public MaxRectsBinTexturePacker()
         {
             Reset();
@@ -50,6 +52,7 @@ namespace SpriteAnimator.Wrappers
         {
             return new Rect(0, 0, packer.Width, packer.Height);
         }
+        public void SetTextureSize(Size sive) { }
         private MaxRectsBinPack.FreeRectChoiceHeuristic PackingMethodToFreeRectChoiceHeuristic(PackingMethod packingMethod)
         {
             switch(packingMethod)
